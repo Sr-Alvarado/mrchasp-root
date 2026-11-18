@@ -1,0 +1,101 @@
+---
+import ActivityBackground from '../components/ActivityBackground.astro'
+import BottomBar from '../components/BottomBar.astro'
+import CardGrid from '../components/CardGrid.astro'
+import Contact from '../components/Contact.astro'
+import FeedCard from '../components/FeedCard.astro'
+import Hero from '../components/Hero.astro'
+import Layout from '../components/Layout.astro'
+import ProjectCard from '../components/ProjectCard.astro'
+import Rail from '../components/Rail.astro'
+import Section from '../components/Section.astro'
+import TopBar from '../components/TopBar.astro'
+import {content} from '../lib/content'
+import {defaultLocale, type Locale, locales, localize, ui} from '../lib/i18n'
+import type {NavItem} from '../lib/navigation'
+import {onBackground, onInk} from '../lib/siteColor'
+
+export const getStaticPaths = () =>
+  locales.map((locale) => ({
+    params: {lang: locale === defaultLocale ? undefined : locale},
+    props: {locale},
+  }))
+
+type Props = {locale: Locale}
+
+const nowCount = 8
+const sourceCount = 3
+
+const {locale} = Astro.props
+const t = ui[locale]
+const {profile, palettes, root, sites, channels, projects, feed} = content
+const cvUrl = sites.find((site) => site.key === 'cv')?.url
+const sectionSites = sites.filter((site) => site.key !== 'cv')
+const sourceColor = (source: string | null) => {
+  const site = sites.find((candidate) => candidate.key === source)
+  return site && onBackground(site)
+}
+
+const navItems: NavItem[] = [
+  {id: 'inicio', label: t.home, href: '#inicio', variant: 'home'},
+  {id: 'ando', label: t.now, href: '#ando', variant: 'now', color: onInk(root)},
+  ...sites.map((site) => ({
+    id: site.key,
+    label: site.name ?? site.key,
+    href: site.key === 'cv' ? (site.url ?? '') : `#${site.key}`,
+    variant: 'site' as const,
+    color: onInk(site),
+  })),
+  {id: 'contacto', label: t.contact, href: '#contacto', variant: 'contact'},
+]
+---
+
+<Layout
+  locale={locale}
+  title={profile.alias}
+  description={localize(profile.bio, locale)}
+  image={profile.og}
+>
+  <Rail items={navItems} label={t.sections} />
+  <BottomBar items={navItems} label={t.sections} />
+  <TopBar channels={channels.filter((channel) => channel.showInHero)} locale={locale} />
+  <main>
+    <Hero profile={profile} cvUrl={cvUrl} locale={locale} />
+    <Section id="ando" title={t.nowTitle}>
+      <CardGrid>
+        {
+          feed
+            .slice(0, nowCount)
+            .map((item) => (
+              <FeedCard item={item} color={sourceColor(item.source)} locale={locale} />
+            ))
+        }
+      </CardGrid>
+    </Section>
+    {
+      sectionSites.map((site) => (
+        <Section
+          id={site.key}
+          title={site.name}
+          description={localize(site.description, locale)}
+          url={site.url}
+        >
+          <CardGrid>
+            {site.key === 'lab'
+              ? projects.map((project) => <ProjectCard project={project} locale={locale} />)
+              : feed
+                  .filter((item) => item.source === site.key)
+                  .slice(0, sourceCount)
+                  .map((item) => (
+                    <FeedCard item={item} color={onBackground(site)} locale={locale} />
+                  ))}
+          </CardGrid>
+        </Section>
+      ))
+    }
+    <Section id="contacto" title={t.contact}>
+      <Contact channels={channels} cvUrl={cvUrl} locale={locale} />
+    </Section>
+  </main>
+  <ActivityBackground days={feed.map((item) => item.publishedAt)} palettes={palettes} />
+</Layout>
