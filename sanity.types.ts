@@ -15,6 +15,13 @@
 export declare const internalGroqTypeReferenceTo: unique symbol;
 
 // Source: schema.json
+export type SanityImageAssetReference = {
+  _ref: string;
+  _type: "reference";
+  _weak?: boolean;
+  [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
+};
+
 export type FeedItem = {
   _id: string;
   _type: "feedItem";
@@ -24,34 +31,31 @@ export type FeedItem = {
   source?: "instagram" | "bluesky" | "blog" | "brain" | "lab" | "talks";
   title?: string;
   text?: string;
-  image?: CloudinaryAsset;
+  image?: {
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    _type: "image";
+  };
   url?: string;
   publishedAt?: string;
 };
 
-export type CloudinaryAsset = {
-  _type: "cloudinary.asset";
-  id?: string;
-  public_id?: string;
-  resource_type?: string;
-  type?: string;
-  format?: string;
-  version?: number;
-  url?: string;
-  secure_url?: string;
-  width?: number;
+export type SanityImageCrop = {
+  _type: "sanity.imageCrop";
+  top?: number;
+  bottom?: number;
+  left?: number;
+  right?: number;
+};
+
+export type SanityImageHotspot = {
+  _type: "sanity.imageHotspot";
+  x?: number;
+  y?: number;
   height?: number;
-  bytes?: number;
-  duration?: number;
-  tags?: Array<string>;
-  created_at?: string;
-  derived?: Array<
-    {
-      _key: string;
-    } & CloudinaryAssetDerived
-  >;
-  access_mode?: string;
-  context?: CloudinaryAssetContext;
+  width?: number;
 };
 
 export type Project = {
@@ -66,11 +70,14 @@ export type Project = {
   description?: LocaleText;
   status?: "live" | "beta" | "paused" | "archived";
   stack?: Array<string>;
-  images?: Array<
-    {
-      _key: string;
-    } & CloudinaryAsset
-  >;
+  images?: Array<{
+    asset?: SanityImageAssetReference;
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    _type: "image";
+    _key: string;
+  }>;
   links?: Array<{
     label?: LocaleString;
     url?: string;
@@ -171,27 +178,15 @@ export type Profile = {
   };
   images?: Array<{
     role?: "avatar" | "cover" | "cutout" | "og";
-    image?: CloudinaryAsset;
+    image?: {
+      asset?: SanityImageAssetReference;
+      media?: unknown;
+      hotspot?: SanityImageHotspot;
+      crop?: SanityImageCrop;
+      _type: "image";
+    };
     _key: string;
   }>;
-};
-
-export type CloudinaryAssetContextCustom = {
-  _type: "cloudinary.assetContextCustom";
-  alt?: string;
-  caption?: string;
-};
-
-export type CloudinaryAssetContext = {
-  _type: "cloudinary.assetContext";
-  custom?: CloudinaryAssetContextCustom;
-};
-
-export type CloudinaryAssetDerived = {
-  _type: "cloudinary.assetDerived";
-  raw_transformation?: string;
-  url?: string;
-  secure_url?: string;
 };
 
 export type SanityImagePaletteSwatch = {
@@ -230,22 +225,6 @@ export type SanityImageMetadata = {
   thumbHash?: string;
   hasAlpha?: boolean;
   isOpaque?: boolean;
-};
-
-export type SanityImageHotspot = {
-  _type: "sanity.imageHotspot";
-  x?: number;
-  y?: number;
-  height?: number;
-  width?: number;
-};
-
-export type SanityImageCrop = {
-  _type: "sanity.imageCrop";
-  top?: number;
-  bottom?: number;
-  left?: number;
-  right?: number;
 };
 
 export type SanityFileAsset = {
@@ -308,8 +287,10 @@ export type Geopoint = {
 };
 
 export type AllSanitySchemaTypes =
+  | SanityImageAssetReference
   | FeedItem
-  | CloudinaryAsset
+  | SanityImageCrop
+  | SanityImageHotspot
   | Project
   | LocaleString
   | LocaleText
@@ -319,15 +300,10 @@ export type AllSanitySchemaTypes =
   | Theme
   | Palette
   | Profile
-  | CloudinaryAssetContextCustom
-  | CloudinaryAssetContext
-  | CloudinaryAssetDerived
   | SanityImagePaletteSwatch
   | SanityImagePalette
   | SanityImageDimensions
   | SanityImageMetadata
-  | SanityImageHotspot
-  | SanityImageCrop
   | SanityFileAsset
   | SanityAssetSourceData
   | SanityImageAsset
@@ -335,14 +311,14 @@ export type AllSanitySchemaTypes =
 
 // Source: src/lib/queries.ts
 // Variable: homeQuery
-// Query: {  "profile": *[_type == "profile"][0]{    alias,    "displayName": array::join(array::compact([name.first, name.last, name.secondLast]), " "),    "bio": bio.short,    "cutout": images[role == "cutout"][0].image{secure_url, width, height},    "og": images[role == "og"][0].image.secure_url  },  "palettes": *[_type == "theme"][0]{light, dark},  "root": *[_type == "site" && key == "root"][0]{colorLight, colorDark},  "sites": *[_type == "site" && key in ["lab", "blog", "brain", "talks", "cv"]] | order(order asc){    key, name, url, colorLight, colorDark, description  },  "channels": *[_type == "channel"] | order(priority asc){_id, platform, handle, url, showInHero},  "projects": *[_type == "project" && featured] | order(order asc){    _id, name, status, summary, stack, links  },  "feed": *[_type == "feedItem" && defined(publishedAt)] | order(publishedAt desc){    _id, source, title, text, "image": image.secure_url, url, publishedAt  }}
+// Query: {  "profile": *[_type == "profile"][0]{    alias,    "displayName": array::join(array::compact([name.first, name.last, name.secondLast]), " "),    "bio": bio.short,    "cutout": images[role == "cutout"][0].image.asset->{url, "width": metadata.dimensions.width, "height": metadata.dimensions.height},    "og": images[role == "og"][0].image.asset->url  },  "palettes": *[_type == "theme"][0]{light, dark},  "root": *[_type == "site" && key == "root"][0]{colorLight, colorDark},  "sites": *[_type == "site" && key in ["lab", "blog", "brain", "talks", "cv"]] | order(order asc){    key, name, url, colorLight, colorDark, description  },  "channels": *[_type == "channel"] | order(priority asc){_id, platform, handle, url, showInHero},  "projects": *[_type == "project" && featured] | order(order asc){    _id, name, status, summary, stack, links  },  "feed": *[_type == "feedItem" && defined(publishedAt)] | order(publishedAt desc){    _id, source, title, text, "image": image.asset->url, url, publishedAt  }}
 export type HomeQueryResult = {
   profile: {
     alias: string | null;
     displayName: string;
     bio: LocaleString | null;
     cutout: {
-      secure_url: string | null;
+      url: string | null;
       width: number | null;
       height: number | null;
     } | null;
@@ -397,7 +373,7 @@ export type HomeQueryResult = {
 // Query TypeMap
 declare global {
   interface SanityQueries {
-    '{\n  "profile": *[_type == "profile"][0]{\n    alias,\n    "displayName": array::join(array::compact([name.first, name.last, name.secondLast]), " "),\n    "bio": bio.short,\n    "cutout": images[role == "cutout"][0].image{secure_url, width, height},\n    "og": images[role == "og"][0].image.secure_url\n  },\n  "palettes": *[_type == "theme"][0]{light, dark},\n  "root": *[_type == "site" && key == "root"][0]{colorLight, colorDark},\n  "sites": *[_type == "site" && key in ["lab", "blog", "brain", "talks", "cv"]] | order(order asc){\n    key, name, url, colorLight, colorDark, description\n  },\n  "channels": *[_type == "channel"] | order(priority asc){_id, platform, handle, url, showInHero},\n  "projects": *[_type == "project" && featured] | order(order asc){\n    _id, name, status, summary, stack, links\n  },\n  "feed": *[_type == "feedItem" && defined(publishedAt)] | order(publishedAt desc){\n    _id, source, title, text, "image": image.secure_url, url, publishedAt\n  }\n}': HomeQueryResult;
+    '{\n  "profile": *[_type == "profile"][0]{\n    alias,\n    "displayName": array::join(array::compact([name.first, name.last, name.secondLast]), " "),\n    "bio": bio.short,\n    "cutout": images[role == "cutout"][0].image.asset->{url, "width": metadata.dimensions.width, "height": metadata.dimensions.height},\n    "og": images[role == "og"][0].image.asset->url\n  },\n  "palettes": *[_type == "theme"][0]{light, dark},\n  "root": *[_type == "site" && key == "root"][0]{colorLight, colorDark},\n  "sites": *[_type == "site" && key in ["lab", "blog", "brain", "talks", "cv"]] | order(order asc){\n    key, name, url, colorLight, colorDark, description\n  },\n  "channels": *[_type == "channel"] | order(priority asc){_id, platform, handle, url, showInHero},\n  "projects": *[_type == "project" && featured] | order(order asc){\n    _id, name, status, summary, stack, links\n  },\n  "feed": *[_type == "feedItem" && defined(publishedAt)] | order(publishedAt desc){\n    _id, source, title, text, "image": image.asset->url, url, publishedAt\n  }\n}': HomeQueryResult;
   }
 }
 // Lets @sanity/client releases that predate the global registry read it too

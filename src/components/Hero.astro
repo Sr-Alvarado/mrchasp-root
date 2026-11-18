@@ -10,8 +10,8 @@ type Props = {profile: typeof content.profile; cvUrl: string | null | undefined;
 const {profile, cvUrl, locale} = Astro.props
 const t = ui[locale]
 const bio = localize(profile.bio, locale)
-const cutout = profile.cutout?.secure_url && {
-  src: cloudinaryUrl(profile.cutout.secure_url, 1200),
+const cutout = profile.cutout?.url && {
+  src: cloudinaryUrl(profile.cutout.url, 1200),
   ratio: `${profile.cutout.width} / ${profile.cutout.height}`,
 }
 ---
