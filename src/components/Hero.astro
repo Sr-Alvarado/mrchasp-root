@@ -39,7 +39,7 @@ const cutout = profile.cutout?.url && {
     cutout && (
       <div
         class="cutout"
-        style={`--cutout: url(${cutout.src}); aspect-ratio: ${cutout.ratio}`}
+        style={`aspect-ratio: ${cutout.ratio}`}
       >
         <img src={cutout.src} alt="" />
       </div>
@@ -108,21 +108,11 @@ const cutout = profile.cutout?.url && {
     right: 0;
     bottom: 0;
     height: 88%;
-    mask: var(--cutout) center / 100% 100% no-repeat;
   }
 
   .cutout img {
     width: 100%;
     height: 100%;
-    filter: grayscale(1);
-  }
-
-  .cutout::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: var(--ink);
-    mix-blend-mode: color;
   }
 
   @media (width < 768px) {
