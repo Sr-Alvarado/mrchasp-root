@@ -38,13 +38,20 @@ const {days, palettes} = Astro.props
   import {currentTheme} from '../scripts/theme'
 
   type Colors = {ink: string; accent: string}
-  type Glow = {color: number; litAt: number; duration: number}
 
   const hues = {
     light: ['#0095a8', '#fa8900', '#00b368', '#ff5792', '#5842ff'],
     dark: ['#16a3b6', '#e4b781', '#49e9a6', '#df769b', '#7060eb'],
   }
-  const columnsPerScreen = 140
+  const cellSize = 10
+  const step = cellSize + 4
+  const litShare = 0.20
+  const hueShare = 9 / 10
+  const hueAlpha = 0.5
+  const intensity = 0.25
+  const levels = [0.4, 0.6, 0.8, 1]
+  const fadeMs = 600
+  const glowMs = 1000
   const dayMs = 86_400_000
 
   const canvas = document.querySelector('[data-activity]') as HTMLCanvasElement
@@ -52,7 +59,6 @@ const {days, palettes} = Astro.props
   const palettes: Record<'light' | 'dark', Colors> = JSON.parse(canvas.dataset.palettes as string)
   const motion = matchMedia('(prefers-reduced-motion: no-preference)').matches
 
-  const randomHue = () => Math.floor(Math.random() * hues.light.length)
   const startOfDay = (date: Date) =>
     new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime()
   const today = startOfDay(new Date())
@@ -64,55 +70,52 @@ const {days, palettes} = Astro.props
     counts.set(index, (counts.get(index) ?? 0) + 1)
   }
   const maxCount = Math.max(1, ...counts.values())
-  const tints = new Map([...counts.keys()].map((index) => [index, {color: randomHue(), changeAt: 0}]))
 
-  const glows = new Map<number, Glow>()
-  let step = 0
-  let cellSize = 0
+  const glows = new Map<number, number>()
   let columns = 0
   let phases = new Float32Array()
+  let colorIndex = new Int8Array()
+  let alphas = new Float32Array()
+  let changedAt = new Float32Array()
+  let changeAt = new Float32Array()
   let pointerCell = -1
   let hoveredDay: number | undefined
-
-  const fillCell = (index: number) =>
-    context.fillRect((index % columns) * step, Math.floor(index / columns) * step, cellSize, cellSize)
 
   const paint = (index: number, color: string, alpha: number) => {
     context.fillStyle = color
     context.globalAlpha = alpha
-    fillCell(index)
+    context.fillRect((index % columns) * step, Math.floor(index / columns) * step, cellSize, cellSize)
   }
 
-  const light = (index: number, litAt: number, duration: number) =>
-    glows.set(index, {color: randomHue(), litAt, duration})
+  const reroll = (index: number, now: number) => {
+    const lit = Math.random() < litShare
+    colorIndex[index] = !lit ? -2 : Math.random() < hueShare ? Math.floor(Math.random() * hues.light.length) : -1
+    alphas[index] = intensity * (levels[Math.floor(Math.random() * levels.length)] as number)
+    changedAt[index] = now
+    changeAt[index] = now + 4000 + Math.random() * 12000
+  }
 
   const render = (now: number) => {
     const theme = currentTheme()
     const colors = palettes[theme]
-    const themeHues = hues[theme]
-    context.clearRect(0, 0, canvas.width, canvas.height)
-    context.fillStyle = colors.ink
+    context.clearRect(0, 0, canvas.clientWidth, canvas.clientHeight)
     phases.forEach((phase, index) => {
-      context.globalAlpha = 0.0525 + 0.0275 * Math.sin(motion ? now / 3000 + phase : phase)
-      fillCell(index)
-    })
-    const fadeIn = motion ? Math.min(1, now / 2000) : 1
-    for (const [index, tint] of tints) {
-      if (motion && now > tint.changeAt) {
-        tint.color = randomHue()
-        tint.changeAt = now + 3000 + Math.random() * 4000
+      paint(index, colors.ink, 0.0525 + 0.0275 * Math.sin(motion ? now / 3000 + phase : phase))
+      if (motion && now > (changeAt[index] as number)) reroll(index, now)
+      const count = counts.get(index)
+      const color = colorIndex[index] as number
+      if (count) paint(index, colors.accent, intensity * (0.4 + (0.6 * count) / maxCount))
+      else if (color > -2) {
+        const fade = motion ? Math.min(1, (now - (changedAt[index] as number)) / fadeMs) : 1
+        paint(index, color < 0 ? colors.accent : (hues[theme][color] as string), fade * (alphas[index] as number) * (color < 0 ? 1 : hueAlpha))
       }
-      paint(index, themeHues[tint.color] as string, (0.6 * fadeIn * (counts.get(index) ?? 0)) / maxCount)
-    }
-    if (motion && Math.random() < 0.15) {
-      light(Math.floor(Math.random() * phases.length), now, 2000 + Math.random() * 3000)
-    }
-    for (const [index, glow] of glows) {
-      const progress = (now - glow.litAt) / glow.duration
-      if (progress < 1) paint(index, themeHues[glow.color] as string, 0.5 * (1 - progress))
+    })
+    for (const [index, litAt] of glows) {
+      const glow = 1 - (now - litAt) / glowMs
+      if (glow > 0) paint(index, colors.accent, intensity * glow)
       else glows.delete(index)
     }
-    if (hoveredDay !== undefined) paint(hoveredDay, colors.accent, 0.8)
+    if (hoveredDay !== undefined) paint(hoveredDay, colors.accent, 1)
   }
 
   const frame = (now: number) => {
@@ -128,13 +131,16 @@ const {days, palettes} = Astro.props
     const ratio = devicePixelRatio
     canvas.width = Math.round(canvas.clientWidth * ratio)
     canvas.height = Math.round(canvas.clientHeight * ratio)
-    step = Math.round((Math.max(screen.width, screen.height) * ratio) / columnsPerScreen)
-    cellSize = Math.round(step * 0.7)
-    columns = Math.ceil(canvas.width / step)
-    phases = Float32Array.from(
-      {length: columns * Math.ceil(canvas.height / step)},
-      () => Math.random() * Math.PI * 2,
-    )
+    context.setTransform(ratio, 0, 0, ratio, 0, 0)
+    columns = Math.ceil(canvas.clientWidth / step)
+    const length = columns * Math.ceil(canvas.clientHeight / step)
+    phases = Float32Array.from({length}, () => Math.random() * Math.PI * 2)
+    colorIndex = new Int8Array(length)
+    alphas = new Float32Array(length)
+    changedAt = new Float32Array(length)
+    changeAt = new Float32Array(length)
+    const now = performance.now()
+    for (let index = 0; index < length; index++) reroll(index, now - fadeMs)
     glows.clear()
     redraw()
   }).observe(canvas)
@@ -150,16 +156,15 @@ const {days, palettes} = Astro.props
   if (motion) {
     addEventListener('pointermove', (event) => {
       const rect = canvas.getBoundingClientRect()
-      const column = Math.floor(((event.clientX - rect.left) * devicePixelRatio) / step)
-      const index =
-        Math.floor(((event.clientY - rect.top) * devicePixelRatio) / step) * columns + column
+      const column = Math.floor((event.clientX - rect.left) / step)
+      const index = Math.floor((event.clientY - rect.top) / step) * columns + column
       if (index === pointerCell || column < 0 || column >= columns || index >= phases.length) return
       pointerCell = index
-      light(index, event.timeStamp, 1000)
+      glows.set(index, event.timeStamp)
       const neighbor =
         index + (Math.random() < 0.5 ? 1 : columns) * (Math.random() < 0.5 ? 1 : -1)
       if (Math.random() < 0.2 && neighbor >= 0 && neighbor < phases.length) {
-        light(neighbor, event.timeStamp, 1000)
+        glows.set(neighbor, event.timeStamp)
       }
     })
     requestAnimationFrame(frame)
