@@ -1,17 +1,24 @@
 ---
 import type {HTMLAttributes} from 'astro/types'
+import {Icon} from 'astro-icon/components'
 
 type Props = Omit<HTMLAttributes<'a'>, 'type'> & {
-  variant: 'primary' | 'secondary' | 'tertiary' | 'icon'
-  size?: 'large'
+  variant: 'primary' | 'secondary' | 'tertiary'
+  icon?: string
+  iconPosition?: 'start' | 'end'
 }
 
-const {variant, size, href, ...rest} = Astro.props
+const {variant, icon, iconPosition = 'end', href, ...rest} = Astro.props
 const Element = href ? 'a' : 'button'
 ---
 
-<Element class:list={['button', variant, size]} href={href} {...rest}>
+<Element
+  class:list={['button', variant, iconPosition, {square: !Astro.slots.has('default')}]}
+  href={href}
+  {...rest}
+>
   <slot />
+  {icon && <Icon name={icon} />}
 </Element>
 
 <style>
@@ -22,7 +29,7 @@ const Element = href ? 'a' : 'button'
     gap: var(--s2);
     min-height: var(--s12);
     padding: 0 var(--s6);
-    font-size: 14px;
+    font-size: var(--text-base);
     font-weight: 500;
     border: var(--stroke) solid transparent;
     text-shadow: none;
@@ -37,9 +44,18 @@ const Element = href ? 'a' : 'button'
     transform: translateY(2px);
   }
 
+  .start {
+    flex-direction: row-reverse;
+  }
+
+  .square {
+    width: var(--s12);
+    padding: 0;
+  }
+
   .primary {
     background: var(--accent);
-    color: var(--on-accent);
+    color: var(--bg);
   }
 
   .secondary {
@@ -47,22 +63,8 @@ const Element = href ? 'a' : 'button'
   }
 
   .tertiary {
-    min-height: 0;
-    padding: 0 0 var(--s1);
-    border-width: 0 0 var(--stroke);
-    border-bottom-color: var(--ink);
-  }
-
-  .icon {
-    width: var(--s8);
-    min-height: var(--s8);
     padding: 0;
-    border-color: var(--line);
-  }
-
-  .large {
-    min-height: var(--s16);
-    padding: 0 var(--s8);
-    font-size: 18px;
+    text-decoration: underline var(--stroke);
+    text-underline-offset: var(--s1);
   }
 </style>

@@ -1,5 +1,4 @@
 ---
-import {Icon} from 'astro-icon/components'
 import Button from './Button.astro'
 
 type Props = {
@@ -20,9 +19,8 @@ const {id, title, description, url} = Astro.props
     </div>
     {
       url && (
-        <Button variant="tertiary" href={url}>
+        <Button variant="tertiary" href={url} icon="ph:arrow-up-right-light">
           {new URL(url).host}
-          <Icon name="ph:arrow-up-right-light" />
         </Button>
       )
     }
@@ -51,13 +49,13 @@ const {id, title, description, url} = Astro.props
   }
 
   h2 {
-    font-size: 32px;
+    font-size: var(--text-4xl);
     font-weight: 700;
     line-height: 1.1;
   }
 
   p {
-    font-size: 14px;
+    font-size: var(--text-base);
     color: var(--ink-muted);
   }
 </style>

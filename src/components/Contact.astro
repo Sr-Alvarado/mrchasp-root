@@ -1,8 +1,8 @@
 ---
+import {channelIcon} from '../lib/channelIcon'
 import type {ChannelEntry} from '../lib/content'
 import {type Locale, ui} from '../lib/i18n'
 import Button from './Button.astro'
-import ChannelIcon from './ChannelIcon.astro'
 
 type Props = {channels: ChannelEntry[]; cvUrl: string | null | undefined; locale: Locale}
 
@@ -16,8 +16,12 @@ const email = channels.find((channel) => channel.url?.startsWith('mailto:'))
     {
       channels.map((channel) => (
         <li>
-          <Button variant="secondary" href={channel.url}>
-            <ChannelIcon platform={channel.platform} />
+          <Button
+            variant="secondary"
+            href={channel.url}
+            icon={channelIcon(channel.platform)}
+            iconPosition="start"
+          >
             {channel.platform}
           </Button>
         </li>
@@ -26,7 +30,7 @@ const email = channels.find((channel) => channel.url?.startsWith('mailto:'))
   </ul>
   {
     cvUrl && (
-      <Button variant="primary" size="large" href={cvUrl}>
+      <Button variant="primary" href={cvUrl}>
         {ui[locale].viewCv}
       </Button>
     )
@@ -42,7 +46,7 @@ const email = channels.find((channel) => channel.url?.startsWith('mailto:'))
   }
 
   .email {
-    font-size: clamp(24px, 5vw, 48px);
+    font-size: clamp(var(--text-2xl), 5vw, var(--text-5xl));
     font-weight: 700;
     line-height: 1.1;
     overflow-wrap: anywhere;

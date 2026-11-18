@@ -30,7 +30,9 @@ const cutout = profile.cutout?.secure_url && {
           </Button>
         )
       }
-      <Button variant="tertiary" href="#contacto">{t.contactMe}</Button>
+      <Button variant="tertiary" href="#contacto" icon="ph:arrow-right-light">
+        {t.contactMe}
+      </Button>
     </div>
   </div>
   {
@@ -50,42 +52,47 @@ const cutout = profile.cutout?.secure_url && {
     position: relative;
     display: flex;
     align-items: center;
-    min-height: calc(100svh - 192px);
-    padding: var(--s24) var(--gutter) var(--s16);
+    height: 62.5svh;
+    padding: 0 var(--gutter);
+    container-type: size;
     border-bottom: var(--stroke) solid var(--line);
     overflow: hidden;
   }
 
   .intro {
+    --u: calc(100cqh / 500);
     position: relative;
     z-index: 1;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: var(--s4);
-    max-width: 560px;
+    gap: calc(16 * var(--u));
+    max-width: calc(560 * var(--u));
+    padding-block: calc(48 * var(--u));
   }
 
   .intro > :global(svg) {
+    width: calc(96 * var(--u));
+    height: auto;
     color: var(--accent-text);
   }
 
   h1 {
-    font-size: 76px;
+    font-size: calc(76 * var(--u));
     font-weight: 700;
     line-height: 1;
     letter-spacing: -0.02em;
   }
 
   .name {
-    font-size: 14px;
+    font-size: calc(14 * var(--u));
     font-weight: 500;
     letter-spacing: 0.12em;
     text-transform: uppercase;
   }
 
   .bio {
-    font-size: 18px;
+    font-size: calc(18 * var(--u));
     color: var(--ink-muted);
   }
 
@@ -93,7 +100,7 @@ const cutout = profile.cutout?.secure_url && {
     display: flex;
     align-items: center;
     gap: var(--s6);
-    margin-top: var(--s4);
+    margin-top: calc(16 * var(--u));
   }
 
   .cutout {
@@ -121,17 +128,6 @@ const cutout = profile.cutout?.secure_url && {
   @media (width < 768px) {
     .hero {
       align-items: flex-end;
-      min-height: calc(100svh - 192px - var(--bar));
-      padding-top: var(--s16);
-    }
-
-    .intro > :global(svg) {
-      width: 72px;
-      height: 72px;
-    }
-
-    h1 {
-      font-size: 60px;
     }
 
     .actions {

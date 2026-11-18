@@ -1,8 +1,8 @@
 ---
+import {channelIcon} from '../lib/channelIcon'
 import type {ChannelEntry} from '../lib/content'
 import {type Locale, ui} from '../lib/i18n'
-import ChannelIcon from './ChannelIcon.astro'
-import IconButton from './IconButton.astro'
+import Button from './Button.astro'
 import LangToggle from './LangToggle.astro'
 import ThemeToggle from './ThemeToggle.astro'
 
@@ -17,9 +17,13 @@ const t = ui[locale]
     {
       channels.map((channel) => (
         <li>
-          <IconButton label={channel.platform ?? ''} href={channel.url}>
-            <ChannelIcon platform={channel.platform} />
-          </IconButton>
+          <Button
+            variant="tertiary"
+            href={channel.url}
+            icon={channelIcon(channel.platform)}
+            aria-label={channel.platform}
+            title={channel.platform}
+          />
         </li>
       ))
     }

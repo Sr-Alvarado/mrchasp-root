@@ -1,8 +1,3 @@
----
-import {Icon} from 'astro-icon/components'
-
-type Props = {platform: string | null}
-
 const icons: Record<string, string> = {
   github: 'simple-icons:github',
   instagram: 'simple-icons:instagram',
@@ -11,7 +6,5 @@ const icons: Record<string, string> = {
   email: 'ph:envelope-simple-light',
 }
 
-const name = icons[Astro.props.platform?.toLowerCase() ?? ''] ?? 'ph:link-light'
----
-
-<Icon name={name} />
+export const channelIcon = (platform: string | null) =>
+  icons[platform?.toLowerCase() ?? ''] ?? 'ph:link-light'

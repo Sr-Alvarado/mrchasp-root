@@ -30,6 +30,10 @@ const {current, label} = Astro.props
     gap: var(--s1);
   }
 
+  [aria-current] :global(.tag) {
+    font-weight: 700;
+  }
+
   a + a::before {
     content: "·";
     margin-right: var(--s1);

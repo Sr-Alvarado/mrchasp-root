@@ -1,5 +1,4 @@
 ---
-import {Icon} from 'astro-icon/components'
 import type {ProjectEntry} from '../lib/content'
 import {type Locale, localize, ui} from '../lib/i18n'
 import Button from './Button.astro'
@@ -33,9 +32,8 @@ const summary = localize(project.summary, locale)
       <ul class="row">
         {project.links.map((link) => (
           <li>
-            <Button variant="tertiary" href={link.url}>
+            <Button variant="tertiary" href={link.url} icon="ph:arrow-up-right-light">
               {localize(link.label, locale)}
-              <Icon name="ph:arrow-up-right-light" />
             </Button>
           </li>
         ))}

@@ -9,7 +9,13 @@
   --s12: 48px;
   --s16: 64px;
   --s24: 96px;
-  --rail: 72px;
+  --text-xs: 12px;
+  --text-base: 16px;
+  --text-xl: 20px;
+  --text-2xl: 24px;
+  --text-4xl: 36px;
+  --text-5xl: 48px;
+  --rail: 88px;
   --bar: 48px;
   --gutter: var(--s12);
   --fast: 150ms;
