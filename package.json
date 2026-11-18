@@ -12,9 +12,11 @@
     "node": "22.x"
   },
   "dependencies": {
-    "@lucide/astro": "^1.74.0",
+    "@iconify-json/ph": "^1.2.2",
+    "@iconify-json/simple-icons": "^1.2.103",
     "@sanity/client": "^8.16.0",
     "astro": "^7.4.12",
+    "astro-icon": "^1.2.0",
     "groq": "^6.24.0"
   },
   "devDependencies": {

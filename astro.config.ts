@@ -1,8 +1,10 @@
 import {defineConfig, fontProviders} from 'astro/config'
+import icon from 'astro-icon'
 import {defaultLocale, locales} from './src/lib/i18n'
 
 export default defineConfig({
   site: 'https://mrchasp.com',
+  integrations: [icon()],
   i18n: {locales: [...locales], defaultLocale},
   fonts: [
     {

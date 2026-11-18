@@ -1,5 +1,5 @@
 ---
-import {ArrowUpRight} from '@lucide/astro'
+import {Icon} from 'astro-icon/components'
 import Button from './Button.astro'
 
 type Props = {
@@ -22,7 +22,7 @@ const {id, title, description, url} = Astro.props
       url && (
         <Button variant="tertiary" href={url}>
           {new URL(url).host}
-          <ArrowUpRight />
+          <Icon name="ph:arrow-up-right-light" />
         </Button>
       )
     }

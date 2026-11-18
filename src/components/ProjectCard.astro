@@ -1,5 +1,5 @@
 ---
-import {ArrowUpRight} from '@lucide/astro'
+import {Icon} from 'astro-icon/components'
 import type {ProjectEntry} from '../lib/content'
 import {type Locale, localize, ui} from '../lib/i18n'
 import Button from './Button.astro'
@@ -35,7 +35,7 @@ const summary = localize(project.summary, locale)
           <li>
             <Button variant="tertiary" href={link.url}>
               {localize(link.label, locale)}
-              <ArrowUpRight />
+              <Icon name="ph:arrow-up-right-light" />
             </Button>
           </li>
         ))}

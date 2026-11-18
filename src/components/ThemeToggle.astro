@@ -1,5 +1,5 @@
 ---
-import {SunMoon} from '@lucide/astro'
+import {Icon} from 'astro-icon/components'
 import IconButton from './IconButton.astro'
 
 type Props = {label: string}
@@ -8,7 +8,7 @@ const {label} = Astro.props
 ---
 
 <IconButton label={label} data-theme-toggle>
-  <SunMoon />
+  <Icon name="ph:circle-half-light" />
 </IconButton>
 
 <script>
