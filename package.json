@@ -1,0 +1,26 @@
+{
+  "name": "mrchasp-root",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro check && astro build",
+    "preview": "astro preview",
+    "typegen": "sanity typegen generate"
+  },
+  "engines": {
+    "node": "22.x"
+  },
+  "dependencies": {
+    "@lucide/astro": "^1.74.0",
+    "@sanity/client": "^8.16.0",
+    "astro": "^7.4.12",
+    "groq": "^6.24.0"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.12",
+    "@biomejs/biome": "^2.6.8",
+    "sanity": "^6.24.0",
+    "typescript": "~6.0.3"
+  }
+}
