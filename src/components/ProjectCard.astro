@@ -1,0 +1,53 @@
+---
+import {ArrowUpRight} from '@lucide/astro'
+import type {ProjectEntry} from '../lib/content'
+import {type Locale, localize, ui} from '../lib/i18n'
+import Button from './Button.astro'
+import Card from './Card.astro'
+import Status from './Status.astro'
+import Tag from './Tag.astro'
+
+type Props = {project: ProjectEntry; locale: Locale}
+
+const {project, locale} = Astro.props
+const summary = localize(project.summary, locale)
+---
+
+<Card>
+  {project.status && <Status status={project.status} label={ui[locale].status[project.status]} />}
+  <h3>{project.name}</h3>
+  {summary && <p>{summary}</p>}
+  {
+    project.stack && (
+      <ul class="row">
+        {project.stack.map((technology) => (
+          <li>
+            <Tag>{technology}</Tag>
+          </li>
+        ))}
+      </ul>
+    )
+  }
+  {
+    project.links && (
+      <ul class="row">
+        {project.links.map((link) => (
+          <li>
+            <Button variant="tertiary" href={link.url}>
+              {localize(link.label, locale)}
+              <ArrowUpRight />
+            </Button>
+          </li>
+        ))}
+      </ul>
+    )
+  }
+</Card>
+
+<style>
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s2) var(--s4);
+  }
+</style>

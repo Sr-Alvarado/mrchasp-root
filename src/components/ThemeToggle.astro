@@ -1,0 +1,22 @@
+---
+import {SunMoon} from '@lucide/astro'
+import IconButton from './IconButton.astro'
+
+type Props = {label: string}
+
+const {label} = Astro.props
+---
+
+<IconButton label={label} data-theme-toggle>
+  <SunMoon />
+</IconButton>
+
+<script>
+  import {currentTheme, themeKey} from '../scripts/theme'
+
+  document.querySelector('[data-theme-toggle]')?.addEventListener('click', () => {
+    const theme = currentTheme() === 'dark' ? 'light' : 'dark'
+    document.documentElement.dataset.theme = theme
+    localStorage.setItem(themeKey, theme)
+  })
+</script>

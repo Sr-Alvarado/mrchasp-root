@@ -1,0 +1,29 @@
+---
+import type {NavItem} from '../lib/navigation'
+import Logo from './Logo.astro'
+
+type Props = {item: NavItem}
+
+const {item} = Astro.props
+---
+
+{
+  item.variant === 'home' ? (
+    <Logo size={20} />
+  ) : (
+    <span class="marker" style={item.color && `background: ${item.color}`} />
+  )
+}
+
+<style>
+  .marker {
+    flex-shrink: 0;
+    width: var(--s2);
+    height: var(--s2);
+    border: var(--stroke) solid currentColor;
+  }
+
+  .marker[style] {
+    border: 0;
+  }
+</style>

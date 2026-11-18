@@ -1,0 +1,19 @@
+---
+import {cloudinaryUrl} from '../lib/cloudinary'
+import type {FeedEntry} from '../lib/content'
+import type {Locale} from '../lib/i18n'
+import Card from './Card.astro'
+import Tag from './Tag.astro'
+
+type Props = {item: FeedEntry; color: string | undefined; locale: Locale}
+
+const {item, color, locale} = Astro.props
+const date = new Intl.DateTimeFormat(locale, {dateStyle: 'medium'}).format(new Date(item.publishedAt))
+---
+
+<Card href={item.url} wide={Boolean(item.image)} data-day={item.publishedAt}>
+  {item.image && <img slot="media" src={cloudinaryUrl(item.image, 800)} alt="" loading="lazy" />}
+  <Tag color={color}>{item.source} · {date}</Tag>
+  {item.title && <h3>{item.title}</h3>}
+  {item.text && <p>{item.text}</p>}
+</Card>

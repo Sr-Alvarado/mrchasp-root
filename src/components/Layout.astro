@@ -1,0 +1,64 @@
+---
+import {Font} from 'astro:assets'
+import {getRelativeLocaleUrl} from 'astro:i18n'
+import type {Palette} from '../../sanity.types'
+import {cloudinaryUrl} from '../lib/cloudinary'
+import {content} from '../lib/content'
+import {type Locale, locales} from '../lib/i18n'
+import {themeKey} from '../scripts/theme'
+import '../styles/global.css'
+
+type Props = {
+  locale: Locale
+  title: string | null
+  description: string | undefined
+  image: string | null
+}
+
+const {locale, title, description, image} = Astro.props
+const {light, dark} = content.palettes
+const roles = Object.keys(light).filter((role) => role !== '_type' && role !== 'activity')
+const themeCss = `:root{${roles
+  .map((role) => {
+    const key = role as keyof Palette
+    return `--${role.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`)}:light-dark(${light[key]},${dark[key]})`
+  })
+  .join(';')}}`
+---
+
+<!doctype html>
+<html lang={locale}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    {description && <meta name="description" content={description} />}
+    <link rel="canonical" href={Astro.url} />
+    {
+      locales.map((alternate) => (
+        <link
+          rel="alternate"
+          hreflang={alternate}
+          href={new URL(getRelativeLocaleUrl(alternate), Astro.site)}
+        />
+      ))
+    }
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={Astro.url} />
+    <meta property="og:locale" content={locale} />
+    <meta property="og:title" content={title} />
+    {description && <meta property="og:description" content={description} />}
+    {image && <meta property="og:image" content={cloudinaryUrl(image, 1200)} />}
+    <meta name="twitter:card" content="summary_large_image" />
+    <Font cssVariable="--font-lexend" preload />
+    <style is:inline set:html={themeCss}></style>
+    <script is:inline define:vars={{themeKey}}>
+      const theme = localStorage.getItem(themeKey)
+      if (theme) document.documentElement.dataset.theme = theme
+    </script>
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>

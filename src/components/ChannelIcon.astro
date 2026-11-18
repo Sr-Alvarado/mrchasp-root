@@ -1,0 +1,17 @@
+---
+import {Briefcase, Camera, Cloud, CodeXml, Link, Mail} from '@lucide/astro'
+
+type Props = {platform: string | null}
+
+const icons: Record<string, typeof Link> = {
+  github: CodeXml,
+  instagram: Camera,
+  linkedin: Briefcase,
+  bluesky: Cloud,
+  email: Mail,
+}
+
+const Icon = icons[Astro.props.platform?.toLowerCase() ?? ''] ?? Link
+---
+
+<Icon />

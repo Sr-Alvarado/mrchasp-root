@@ -1,0 +1,63 @@
+---
+import type {HTMLAttributes} from 'astro/types'
+
+type Props = HTMLAttributes<'a'> & {wide?: boolean}
+
+const {href, wide, ...rest} = Astro.props
+const Element = href ? 'a' : 'article'
+---
+
+<Element class:list={['card', {wide}]} href={href} {...rest}>
+  <slot name="media" />
+  <div class="body">
+    <slot />
+  </div>
+</Element>
+
+<style>
+  .card {
+    display: flex;
+    flex-direction: column;
+    background: var(--surface);
+    border: var(--stroke) solid var(--line);
+    text-shadow: none;
+    transition: border-color var(--fast) ease-out;
+  }
+
+  .card:hover {
+    border-color: var(--accent);
+  }
+
+  .wide {
+    grid-column: span 2;
+  }
+
+  .card > :global(img) {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+  }
+
+  .body {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--s2);
+    padding: var(--s4);
+  }
+
+  .body :global(h3) {
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 1.3;
+  }
+
+  .body :global(p) {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    overflow: hidden;
+    font-size: 14px;
+    color: var(--ink-muted);
+  }
+</style>

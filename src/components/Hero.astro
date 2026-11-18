@@ -1,0 +1,147 @@
+---
+import {cloudinaryUrl} from '../lib/cloudinary'
+import type {content} from '../lib/content'
+import {type Locale, localize, ui} from '../lib/i18n'
+import Button from './Button.astro'
+import Logo from './Logo.astro'
+
+type Props = {profile: typeof content.profile; cvUrl: string | null | undefined; locale: Locale}
+
+const {profile, cvUrl, locale} = Astro.props
+const t = ui[locale]
+const bio = localize(profile.bio, locale)
+const cutout = profile.cutout?.secure_url && {
+  src: cloudinaryUrl(profile.cutout.secure_url, 1200),
+  ratio: `${profile.cutout.width} / ${profile.cutout.height}`,
+}
+---
+
+<section id="inicio" class="hero" aria-labelledby="inicio-title">
+  <div class="intro">
+    <Logo size={96} />
+    <h1 id="inicio-title">{profile.alias}</h1>
+    <p class="name">{profile.displayName}</p>
+    {bio && <p class="bio">{bio}</p>}
+    <div class="actions">
+      {
+        cvUrl && (
+          <Button variant="primary" href={cvUrl}>
+            {t.viewCv}
+          </Button>
+        )
+      }
+      <Button variant="tertiary" href="#contacto">{t.contactMe}</Button>
+    </div>
+  </div>
+  {
+    cutout && (
+      <div
+        class="cutout"
+        style={`--cutout: url(${cutout.src}); aspect-ratio: ${cutout.ratio}`}
+      >
+        <img src={cutout.src} alt="" />
+      </div>
+    )
+  }
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    display: flex;
+    align-items: center;
+    min-height: calc(100svh - 192px);
+    padding: var(--s24) var(--gutter) var(--s16);
+    border-bottom: var(--stroke) solid var(--line);
+    overflow: hidden;
+  }
+
+  .intro {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--s4);
+    max-width: 560px;
+  }
+
+  .intro > :global(svg) {
+    color: var(--accent-text);
+  }
+
+  h1 {
+    font-size: 76px;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+
+  .name {
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .bio {
+    font-size: 18px;
+    color: var(--ink-muted);
+  }
+
+  .actions {
+    display: flex;
+    align-items: center;
+    gap: var(--s6);
+    margin-top: var(--s4);
+  }
+
+  .cutout {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    height: 88%;
+    mask: var(--cutout) center / 100% 100% no-repeat;
+  }
+
+  .cutout img {
+    width: 100%;
+    height: 100%;
+    filter: grayscale(1);
+  }
+
+  .cutout::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: var(--ink);
+    mix-blend-mode: color;
+  }
+
+  @media (width < 768px) {
+    .hero {
+      align-items: flex-end;
+      min-height: calc(100svh - 192px - var(--bar));
+      padding-top: var(--s16);
+    }
+
+    .intro > :global(svg) {
+      width: 72px;
+      height: 72px;
+    }
+
+    h1 {
+      font-size: 60px;
+    }
+
+    .actions {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .cutout {
+      height: 60%;
+      translate: 35% 0;
+    }
+  }
+</style>

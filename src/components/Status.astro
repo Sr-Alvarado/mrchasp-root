@@ -1,0 +1,32 @@
+---
+import type {Project} from '../../sanity.types'
+import Tag from './Tag.astro'
+
+type Props = {status: NonNullable<Project['status']>; label: string}
+
+const {status, label} = Astro.props
+---
+
+<span class="status">
+  <span class:list={['marker', status]}></span>
+  <Tag>{label}</Tag>
+</span>
+
+<style>
+  .status {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s2);
+  }
+
+  .marker {
+    width: var(--s2);
+    height: var(--s2);
+    border: var(--stroke) solid var(--ink-muted);
+  }
+
+  .live {
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+</style>

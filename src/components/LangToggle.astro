@@ -1,0 +1,38 @@
+---
+import {getRelativeLocaleUrl} from 'astro:i18n'
+import {type Locale, locales} from '../lib/i18n'
+import Tag from './Tag.astro'
+
+type Props = {current: Locale; label: string}
+
+const {current, label} = Astro.props
+---
+
+<nav class="lang" aria-label={label}>
+  {
+    locales.map((locale) => (
+      <a
+        href={getRelativeLocaleUrl(locale)}
+        hreflang={locale}
+        lang={locale}
+        aria-current={locale === current ? 'page' : undefined}
+      >
+        <Tag color={locale === current ? 'var(--ink)' : undefined}>{locale}</Tag>
+      </a>
+    ))
+  }
+</nav>
+
+<style>
+  .lang {
+    display: flex;
+    align-items: center;
+    gap: var(--s1);
+  }
+
+  a + a::before {
+    content: "·";
+    margin-right: var(--s1);
+    color: var(--ink-muted);
+  }
+</style>

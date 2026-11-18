@@ -1,0 +1,68 @@
+---
+import type {ChannelEntry} from '../lib/content'
+import {type Locale, ui} from '../lib/i18n'
+import ChannelIcon from './ChannelIcon.astro'
+import IconButton from './IconButton.astro'
+import LangToggle from './LangToggle.astro'
+import ThemeToggle from './ThemeToggle.astro'
+
+type Props = {channels: ChannelEntry[]; locale: Locale}
+
+const {channels, locale} = Astro.props
+const t = ui[locale]
+---
+
+<header class="topbar">
+  <ul class="channels" aria-label={t.channels}>
+    {
+      channels.map((channel) => (
+        <li>
+          <IconButton label={channel.platform ?? ''} href={channel.url}>
+            <ChannelIcon platform={channel.platform} />
+          </IconButton>
+        </li>
+      ))
+    }
+  </ul>
+  <span class="separator" aria-hidden="true"></span>
+  <LangToggle current={locale} label={t.language} />
+  <ThemeToggle label={t.theme} />
+</header>
+
+<style>
+  .topbar {
+    position: absolute;
+    top: var(--s6);
+    right: var(--gutter);
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    gap: var(--s3);
+  }
+
+  .channels {
+    display: flex;
+    gap: var(--s2);
+  }
+
+  .separator {
+    width: var(--stroke);
+    height: var(--s4);
+    background: var(--line);
+  }
+
+  @media (width < 768px) {
+    .topbar {
+      top: var(--s4);
+      left: var(--gutter);
+    }
+
+    .channels {
+      margin-right: auto;
+    }
+
+    .separator {
+      display: none;
+    }
+  }
+</style>

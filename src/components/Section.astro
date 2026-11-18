@@ -1,0 +1,63 @@
+---
+import {ArrowUpRight} from '@lucide/astro'
+import Button from './Button.astro'
+
+type Props = {
+  id: string
+  title: string | null
+  description?: string | undefined
+  url?: string | null | undefined
+}
+
+const {id, title, description, url} = Astro.props
+---
+
+<section id={id} class="section" aria-labelledby={`${id}-title`}>
+  <div class="heading">
+    <div class="titles">
+      <h2 id={`${id}-title`}>{title}</h2>
+      {description && <p>{description}</p>}
+    </div>
+    {
+      url && (
+        <Button variant="tertiary" href={url}>
+          {new URL(url).host}
+          <ArrowUpRight />
+        </Button>
+      )
+    }
+  </div>
+  <slot />
+</section>
+
+<style>
+  .section {
+    padding: var(--s12) var(--gutter);
+  }
+
+  .heading {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: var(--s4);
+    margin-bottom: var(--s8);
+  }
+
+  .titles {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s1);
+  }
+
+  h2 {
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 1.1;
+  }
+
+  p {
+    font-size: 14px;
+    color: var(--ink-muted);
+  }
+</style>
