@@ -1,26 +1,49 @@
 ---
 import {content} from '../lib/content'
-import type {Locale} from '../lib/i18n'
+import {type Locale, locales, localize} from '../lib/i18n'
 
-type Props = {locale: Locale; description: string | undefined}
+type Props = {locale: Locale; title: string | undefined; description: string | undefined}
 
-const {locale, description} = Astro.props
+const {locale, title, description} = Astro.props
 const {profile, channels} = content
+const person = `${Astro.site}#person`
+const website = `${Astro.site}#website`
 
 const data = {
   '@context': 'https://schema.org',
-  '@type': 'ProfilePage',
-  url: Astro.url,
-  inLanguage: locale,
-  mainEntity: {
-    '@type': 'Person',
-    name: profile.displayName,
-    alternateName: profile.alias,
-    description,
-    image: profile.cutout?.url,
-    url: Astro.site,
-    sameAs: channels.flatMap((channel) => (channel.url?.startsWith('https://') ? [channel.url] : [])),
-  },
+  '@graph': [
+    {
+      '@type': 'Person',
+      '@id': person,
+      name: profile.displayName,
+      alternateName: profile.alias,
+      description,
+      jobTitle: localize(profile.jobTitle, locale),
+      knowsAbout: profile.knowsAbout?.map((topic) => localize(topic, locale)),
+      image: profile.cutout?.url,
+      url: Astro.site,
+      sameAs: channels.flatMap((channel) => (channel.url?.startsWith('https://') ? [channel.url] : [])),
+    },
+    {
+      '@type': 'WebSite',
+      '@id': website,
+      url: Astro.site,
+      name: profile.alias,
+      inLanguage: locales,
+      publisher: {'@id': person},
+    },
+    {
+      '@type': 'ProfilePage',
+      '@id': `${Astro.url}#webpage`,
+      url: Astro.url,
+      name: title,
+      description,
+      inLanguage: locale,
+      isPartOf: {'@id': website},
+      about: {'@id': person},
+      mainEntity: {'@id': person},
+    },
+  ],
 }
 ---
 
