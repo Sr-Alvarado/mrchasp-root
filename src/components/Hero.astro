@@ -151,48 +151,28 @@ const cutout = cutoutUrl && {
 
   @media (width < 768px) {
     .hero {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      grid-template-rows: repeat(5, auto) 1fr;
-      height: 62.5svh;
-      padding-top: calc(var(--header) + var(--s4));
-      container-type: size;
+      flex-direction: column;
+      align-items: stretch;
+      max-height: none;
+    }
+
+    .intro,
+    .cutout {
+      --u: min((62.5svh - var(--header) - var(--s4)) / 640, 100cqw / 340);
     }
 
     .intro {
-      --u: min(100cqh / 640, 100cqw / 340);
-      display: contents;
-    }
-
-    .intro > * {
-      grid-column: 1 / -1;
+      padding: calc(var(--header) + var(--s4)) 0 0;
     }
 
     .intro > :global(svg) {
       width: calc(64 * var(--u));
     }
 
-    .bio,
-    .actions {
-      grid-column: 1;
-      z-index: 1;
-    }
-
-    .bio {
-      grid-row: 4;
-    }
-
-    .actions {
-      grid-row: 5;
-    }
-
     .cutout {
-      margin: 0;
-      grid-row: 4 / -1;
-      grid-column: 1 / -1;
       width: calc(100% + var(--gutter));
-      height: 100%;
-      contain: size;
+      height: calc(400 * var(--u));
+      margin: 0 calc(-1 * var(--gutter)) 0 0;
       object-fit: contain;
       object-position: right bottom;
     }
