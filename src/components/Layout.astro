@@ -19,6 +19,7 @@ type Props = {
 const {locale, title, description} = Astro.props
 const {light, dark} = content.palettes
 const ogImageUrl = new URL('/og.jpg', Astro.site)
+const xHandle = content.channels.find((channel) => channel.platform?.toLowerCase() === 'x')?.handle
 const ogLocale = (value: Locale) => {
   const {language, region} = new Intl.Locale(value).maximize()
   return `${language}_${region}`
@@ -78,6 +79,7 @@ const themeCss = `:root{${roles
     <meta property="og:image:alt" content={title} />
     <meta name="twitter:image" content={ogImageUrl} />
     <meta name="twitter:card" content="summary_large_image" />
+    {xHandle && <meta name="twitter:site" content={xHandle} />}
     <StructuredData locale={locale} description={description} />
     <Font cssVariable="--font-lexend" preload />
     <style is:inline set:html={themeCss}></style>

@@ -3,6 +3,7 @@ const icons: Record<string, string> = {
   instagram: 'simple-icons:instagram',
   linkedin: 'simple-icons:linkedin',
   bluesky: 'simple-icons:bluesky',
+  x: 'simple-icons:x',
   email: 'ph:envelope-simple-light',
 }
 
