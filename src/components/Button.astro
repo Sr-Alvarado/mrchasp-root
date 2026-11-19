@@ -10,11 +10,15 @@ type Props = Omit<HTMLAttributes<'a'>, 'type'> & {
 
 const {variant, icon, iconPosition = 'end', href, ...rest} = Astro.props
 const Element = href ? 'a' : 'button'
+const url = href ? new URL(href, Astro.site) : undefined
+const external = url?.protocol.startsWith('http') && url.origin !== Astro.site?.origin
 ---
 
 <Element
   class:list={['button', variant, iconPosition, {square: !Astro.slots.has('default')}]}
   href={href}
+  target={external ? '_blank' : undefined}
+  rel={external ? 'noopener noreferrer' : undefined}
   {...rest}
 >
   <slot />
