@@ -17,7 +17,7 @@ export const homeQuery = defineQuery(`{
   "projects": *[_type == "project" && featured] | order(order asc){
     _id, name, status, summary, stack, links, "image": images[0].asset->url
   },
-  "feed": *[_type == "feedItem" && defined(publishedAt)] | order(publishedAt desc){
+  "feed": *[_type == "feedItem"]{
     _id, source, title, text, "image": image.asset->url, url, publishedAt
   }
 }`)
