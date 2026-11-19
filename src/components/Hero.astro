@@ -52,7 +52,7 @@ const cutout = cutoutUrl && {
         sizes="(width < 768px) 100vw, 55vw"
         width={cutout.width}
         height={cutout.height}
-        alt=""
+        alt={localize(cutout.alt, locale)}
         fetchpriority="high"
       />
     )

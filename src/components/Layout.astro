@@ -3,7 +3,7 @@ import {Font} from 'astro:assets'
 import {getRelativeLocaleUrl} from 'astro:i18n'
 import type {Palette} from '../../sanity.types'
 import {content} from '../lib/content'
-import {type Locale, locales} from '../lib/i18n'
+import {defaultLocale, type Locale, locales, localize} from '../lib/i18n'
 import {icons} from '../lib/icons'
 import {ogImage} from '../lib/ogImage'
 import {themeKey} from '../scripts/theme'
@@ -50,6 +50,11 @@ const themeCss = `:root{${roles
         />
       ))
     }
+    <link
+      rel="alternate"
+      hreflang="x-default"
+      href={new URL(getRelativeLocaleUrl(defaultLocale), Astro.site)}
+    />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     {
       icons
@@ -76,7 +81,7 @@ const themeCss = `:root{${roles
     <meta property="og:image:type" content="image/jpeg" />
     <meta property="og:image:width" content={String(ogImage.width)} />
     <meta property="og:image:height" content={String(ogImage.height)} />
-    <meta property="og:image:alt" content={title} />
+    <meta property="og:image:alt" content={localize(content.profile.og.alt, locale)} />
     <meta name="twitter:image" content={ogImageUrl} />
     <meta name="twitter:card" content="summary_large_image" />
     {xHandle && <meta name="twitter:site" content={xHandle} />}

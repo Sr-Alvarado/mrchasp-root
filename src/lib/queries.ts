@@ -5,8 +5,8 @@ export const homeQuery = defineQuery(`{
     alias,
     "displayName": array::join(array::compact([name.first, name.last, name.secondLast]), " "),
     "bio": bio.short,
-    "cutout": images[role == "cutout"][0].image.asset->{url, "width": metadata.dimensions.width, "height": metadata.dimensions.height},
-    "og": images[role == "og"][0].image{asset, hotspot, crop}
+    "cutout": images[role == "cutout"][0].image{alt, "url": asset->url, "width": asset->metadata.dimensions.width, "height": asset->metadata.dimensions.height},
+    "og": images[role == "og"][0].image{asset, hotspot, crop, alt}
   },
   "palettes": *[_type == "theme"][0]{light, dark},
   "root": *[_type == "site" && key == "root"][0]{colorLight, colorDark, seoTitle, ui},
