@@ -9,6 +9,7 @@ import Layout from '../components/Layout.astro'
 import ProjectCard from '../components/ProjectCard.astro'
 import Rail from '../components/Rail.astro'
 import Section from '../components/Section.astro'
+import Ticker from '../components/Ticker.astro'
 import TopBar from '../components/TopBar.astro'
 import {content} from '../lib/content'
 import {defaultLocale, type Locale, locales, localize, ui} from '../lib/i18n'
@@ -23,18 +24,30 @@ export const getStaticPaths = () =>
 
 type Props = {locale: Locale}
 
-const nowCount = 8
-const sourceCount = 3
+const cardCount = 4
+const tickerPerSource = 3
 
 const {locale} = Astro.props
 const t = ui[locale]
 const {profile, palettes, root, sites, channels, projects, feed} = content
 const cvUrl = sites.find((site) => site.key === 'cv')?.url
 const sectionSites = sites.filter((site) => site.key !== 'cv')
-const sourceColor = (source: string | null) => {
-  const site = sites.find((candidate) => candidate.key === source)
-  return site && onBackground(site)
-}
+
+const tickerFeed = Object.values(Object.groupBy(feed, (item) => item.source ?? ''))
+  .flatMap((items) => items?.slice(0, tickerPerSource) ?? [])
+  .sort((a, b) => b.publishedAt.localeCompare(a.publishedAt))
+  .map((item) => {
+    const site = sites.find((candidate) => candidate.key === item.source)
+    const channel = channels.find((candidate) => candidate.platform?.toLowerCase() === item.source)
+    return {
+      source: site?.name ?? channel?.platform ?? item.source,
+      sourceUrl: site?.url ?? channel?.url,
+      color: site && onBackground(site),
+      title: item.title ?? item.text,
+      url: item.url,
+      day: item.publishedAt,
+    }
+  })
 
 const navItems: NavItem[] = [
   {id: 'inicio', label: t.home, href: '#inicio', variant: 'home'},
@@ -61,17 +74,11 @@ const navItems: NavItem[] = [
   <TopBar channels={channels.filter((channel) => channel.showInHero)} locale={locale} />
   <main>
     <Hero profile={profile} cvUrl={cvUrl} locale={locale} />
-    <Section id="ando" title={t.nowTitle}>
-      <CardGrid>
-        {
-          feed
-            .slice(0, nowCount)
-            .map((item) => (
-              <FeedCard item={item} color={sourceColor(item.source)} locale={locale} />
-            ))
-        }
-      </CardGrid>
-    </Section>
+    <Ticker
+      id="ando"
+      label={t.nowTitle}
+      items={tickerFeed}
+    />
     {
       sectionSites.map((site) => (
         <Section
@@ -82,10 +89,12 @@ const navItems: NavItem[] = [
         >
           <CardGrid>
             {site.key === 'lab'
-              ? projects.map((project) => <ProjectCard project={project} locale={locale} />)
+              ? projects
+                  .slice(0, cardCount)
+                  .map((project) => <ProjectCard project={project} locale={locale} />)
               : feed
                   .filter((item) => item.source === site.key)
-                  .slice(0, sourceCount)
+                  .slice(0, cardCount)
                   .map((item) => (
                     <FeedCard item={item} color={onBackground(site)} locale={locale} />
                   ))}

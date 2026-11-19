@@ -1,0 +1,118 @@
+---
+type Item = {
+  source: string | null
+  sourceUrl: string | null | undefined
+  color: string | undefined
+  title: string | null
+  url: string | null
+  day: string
+}
+
+type Props = {id: string; label: string; items: Item[]}
+
+const {id, label, items} = Astro.props
+---
+
+{
+  items.length > 0 && (
+    <section id={id} class="ticker" aria-label={label}>
+      <div class="track">
+        {[false, true].map((copy) => (
+          <ul inert={copy} aria-hidden={copy ? 'true' : undefined}>
+            {items.map((item) => (
+              <li data-day={item.day}>
+                <a class="source" href={item.sourceUrl} style={item.color && `color: ${item.color}`}>
+                  {item.source}
+                </a>
+                <a href={item.url}>{item.title}</a>
+              </li>
+            ))}
+          </ul>
+        ))}
+      </div>
+    </section>
+  )
+}
+
+<style>
+  .ticker {
+    margin-left: calc(-1 * var(--rail));
+    border-block: var(--s1) solid var(--ink);
+    background-color: color-mix(in srgb, var(--bg) 25%, transparent);
+    backdrop-filter: blur(2px);
+    overflow: hidden;
+  }
+
+  .track {
+    display: flex;
+    width: max-content;
+    animation: ticker 40s linear infinite;
+  }
+
+  .ticker:hover .track {
+    animation-play-state: paused;
+  }
+
+  ul {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    gap: var(--s8);
+    min-width: 100vw;
+    min-height: calc(var(--s12) + var(--s2));
+    padding-right: var(--s8);
+  }
+
+  li {
+    display: flex;
+    align-items: baseline;
+    gap: var(--s3);
+    white-space: nowrap;
+  }
+
+  li::before {
+    content: '';
+    align-self: center;
+    width: var(--s2);
+    height: var(--s2);
+    margin-right: var(--s3);
+    background: var(--accent);
+  }
+
+  a {
+    font-size: var(--text-base);
+    text-underline-offset: var(--s1);
+  }
+
+  a:hover {
+    text-decoration: underline var(--stroke);
+  }
+
+  .source {
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  @keyframes ticker {
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ticker {
+      overflow-x: auto;
+    }
+
+    .track {
+      animation: none;
+    }
+  }
+
+  @media (width < 768px) {
+    .ticker {
+      margin-left: 0;
+    }
+  }
+</style>
