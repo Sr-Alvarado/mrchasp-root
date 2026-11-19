@@ -21,6 +21,8 @@
   --gutter: var(--s12);
   --fast: 150ms;
   --slow: 400ms;
+  --card-bg: color-mix(in srgb, var(--bg) 50%, transparent);
+  --card-blur: blur(2px);
   color-scheme: light dark;
 }
 

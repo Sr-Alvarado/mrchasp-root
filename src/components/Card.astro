@@ -8,7 +8,13 @@ const {href, image, ...rest} = Astro.props
 const Element = href ? 'a' : 'article'
 ---
 
-<Element class="card" href={href} {...rest}>
+<Element
+  class="card"
+  href={href}
+  target={href && '_blank'}
+  rel={href && 'noopener noreferrer'}
+  {...rest}
+>
   <div class="body">
     <slot name="head" />
     {image && <img src={cloudinaryUrl(image, 800)} alt="" loading="lazy" />}
@@ -20,7 +26,8 @@ const Element = href ? 'a' : 'article'
   .card {
     display: flex;
     flex-direction: column;
-    background: var(--surface);
+    background: var(--card-bg);
+    backdrop-filter: var(--card-blur);
     border: var(--stroke) solid var(--line);
     text-shadow: none;
     transition: border-color var(--fast) ease-out;
