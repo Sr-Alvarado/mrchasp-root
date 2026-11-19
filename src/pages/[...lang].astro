@@ -13,9 +13,9 @@ import Ticker from '../components/Ticker.astro'
 import TopBar from '../components/TopBar.astro'
 import {content} from '../lib/content'
 import {defaultLocale, type Locale, locales, localize} from '../lib/i18n'
-import {ui} from '../lib/ui'
 import type {NavItem} from '../lib/navigation'
 import {onBackground, onInk} from '../lib/siteColor'
+import {ui} from '../lib/ui'
 
 export const getStaticPaths = () =>
   locales.map((locale) => ({
