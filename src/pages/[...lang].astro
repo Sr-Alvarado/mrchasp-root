@@ -50,16 +50,28 @@ const tickerFeed = Object.values(Object.groupBy(feed, (item) => item.source ?? '
     }
   })
 
+const siteSections = sectionSites
+  .map((site) => ({
+    site,
+    projects: site.key === 'lab' ? projects.slice(0, cardCount) : [],
+    items: site.key === 'lab' ? [] : feed.filter((item) => item.source === site.key).slice(0, cardCount),
+  }))
+  .filter((section) => section.projects.length + section.items.length > 0)
+
 const navItems: NavItem[] = [
   {id: 'inicio', label: t.home, href: '#inicio', variant: 'home'},
-  {id: 'ando', label: t.now, href: '#ando', variant: 'now', color: onInk(root)},
-  ...sites.map((site) => ({
-    id: site.key,
-    label: site.name ?? site.key,
-    href: site.key === 'cv' ? (site.url ?? '') : `#${site.key}`,
-    variant: 'site' as const,
-    color: onInk(site),
-  })),
+  ...(tickerFeed.length > 0
+    ? [{id: 'ando', label: t.now, href: '#ando', variant: 'now' as const, color: onInk(root)}]
+    : []),
+  ...sites
+    .filter((site) => site.key === 'cv' || siteSections.some((section) => section.site === site))
+    .map((site) => ({
+      id: site.key,
+      label: site.name ?? site.key,
+      href: site.key === 'cv' ? (site.url ?? '') : `#${site.key}`,
+      variant: 'site' as const,
+      color: onInk(site),
+    })),
   {id: 'contacto', label: t.contact, href: '#contacto', variant: 'contact'},
 ]
 ---
@@ -81,7 +93,7 @@ const navItems: NavItem[] = [
       items={tickerFeed}
     />
     {
-      sectionSites.map((site) => (
+      siteSections.map(({site, projects, items}) => (
         <Section
           id={site.key}
           title={site.name}
@@ -89,16 +101,12 @@ const navItems: NavItem[] = [
           url={site.url}
         >
           <CardGrid>
-            {site.key === 'lab'
-              ? projects
-                  .slice(0, cardCount)
-                  .map((project) => <ProjectCard project={project} locale={locale} />)
-              : feed
-                  .filter((item) => item.source === site.key)
-                  .slice(0, cardCount)
-                  .map((item) => (
-                    <FeedCard item={item} color={onBackground(site)} locale={locale} />
-                  ))}
+            {projects.map((project) => (
+              <ProjectCard project={project} locale={locale} />
+            ))}
+            {items.map((item) => (
+              <FeedCard item={item} color={onBackground(site)} locale={locale} />
+            ))}
           </CardGrid>
         </Section>
       ))
