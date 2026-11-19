@@ -1,15 +1,17 @@
 ---
 import type {HTMLAttributes} from 'astro/types'
+import {cloudinaryUrl} from '../lib/cloudinary'
 
-type Props = HTMLAttributes<'a'> & {wide?: boolean}
+type Props = HTMLAttributes<'a'> & {image?: string | null | undefined}
 
-const {href, wide, ...rest} = Astro.props
+const {href, image, ...rest} = Astro.props
 const Element = href ? 'a' : 'article'
 ---
 
-<Element class:list={['card', {wide}]} href={href} {...rest}>
-  <slot name="media" />
+<Element class="card" href={href} {...rest}>
   <div class="body">
+    <slot name="head" />
+    {image && <img src={cloudinaryUrl(image, 800)} alt="" loading="lazy" />}
     <slot />
   </div>
 </Element>
@@ -24,26 +26,28 @@ const Element = href ? 'a' : 'article'
     transition: border-color var(--fast) ease-out;
   }
 
-  .card:hover {
+  a.card:hover {
     border-color: var(--accent);
   }
 
-  .wide {
-    grid-column: span 2;
-  }
-
-  .card > :global(img) {
-    width: 100%;
+  img {
+    width: calc(100% + 2 * var(--s4));
+    margin: var(--s2) calc(-1 * var(--s4));
     aspect-ratio: 16 / 9;
     object-fit: cover;
   }
 
   .body {
+    flex: 1;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     gap: var(--s2);
     padding: var(--s4);
+  }
+
+  .body > :global(:is(.tag, .status, h3, img, p) + :not(.tag, .status, h3, img, p)) {
+    margin-top: auto;
   }
 
   .body :global(h3) {

@@ -15,7 +15,7 @@ export const homeQuery = defineQuery(`{
   },
   "channels": *[_type == "channel"] | order(priority asc){_id, platform, handle, url, showInHero},
   "projects": *[_type == "project" && featured] | order(order asc){
-    _id, name, status, summary, stack, links
+    _id, name, status, summary, stack, links, "image": images[0].asset->url
   },
   "feed": *[_type == "feedItem" && defined(publishedAt)] | order(publishedAt desc){
     _id, source, title, text, "image": image.asset->url, url, publishedAt

@@ -1,19 +1,47 @@
-<div class="grid">
+<div class="grid" data-slider>
   <slot />
 </div>
 
+<script>
+  import '../scripts/cardSlider'
+</script>
+
 <style>
   .grid {
+    --columns: 3;
+    --bleed-start: calc(var(--rail) + var(--gutter));
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    grid-auto-flow: row dense;
-    align-items: start;
+    grid-auto-flow: column;
+    grid-auto-columns: calc(0.9 * (100% - (var(--columns) - 1) * var(--s4)) / var(--columns));
     gap: var(--s4);
+    margin: 0 calc(-1 * var(--gutter)) 0 calc(-1 * var(--bleed-start));
+    padding: 0 var(--gutter) 0 var(--bleed-start);
+    overflow-x: auto;
+    scroll-padding-inline: var(--bleed-start) var(--gutter);
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+  }
+
+  .grid > :global(*) {
+    scroll-snap-align: start;
+  }
+
+  .grid[data-dragging] {
+    scroll-snap-type: none;
+    cursor: grabbing;
+    user-select: none;
+  }
+
+  @media (width < 1024px) {
+    .grid {
+      --columns: 2;
+    }
   }
 
   @media (width < 768px) {
     .grid {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+      --columns: 1;
+      --bleed-start: var(--gutter);
     }
   }
 </style>

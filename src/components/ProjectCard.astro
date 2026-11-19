@@ -12,9 +12,13 @@ const {project, locale} = Astro.props
 const summary = localize(project.summary, locale)
 ---
 
-<Card>
-  {project.status && <Status status={project.status} label={ui[locale].status[project.status]} />}
-  <h3>{project.name}</h3>
+<Card image={project.image}>
+  {
+    project.status && (
+      <Status slot="head" status={project.status} label={ui[locale].status[project.status]} />
+    )
+  }
+  <h3 slot="head">{project.name}</h3>
   {summary && <p>{summary}</p>}
   {
     project.stack && (
