@@ -10,13 +10,15 @@ type Props = {profile: typeof content.profile; cvUrl: string | null | undefined;
 const {profile, cvUrl, locale} = Astro.props
 const t = ui[locale]
 const bio = localize(profile.bio, locale)
-const cutout = profile.cutout?.url && {
-  src: cloudinaryUrl(profile.cutout.url, 1200),
-  ratio: `${profile.cutout.width} / ${profile.cutout.height}`,
-}
+const cutout = profile.cutout?.url && {...profile.cutout, src: cloudinaryUrl(profile.cutout.url, 1200)}
 ---
 
-<section id="inicio" class="hero" aria-labelledby="inicio-title">
+<section
+  id="inicio"
+  class="hero"
+  aria-labelledby="inicio-title"
+  style={cutout && `--ratio: ${cutout.width} / ${cutout.height}`}
+>
   <div class="intro">
     <Logo size={96} />
     <h1 id="inicio-title">{profile.alias}</h1>
@@ -35,40 +37,39 @@ const cutout = profile.cutout?.url && {
       </Button>
     </div>
   </div>
-  {
-    cutout && (
-      <div
-        class="cutout"
-        style={`aspect-ratio: ${cutout.ratio}`}
-      >
-        <img src={cutout.src} alt="" />
-      </div>
-    )
-  }
+  {cutout && <img class="cutout" src={cutout.src} width={cutout.width} height={cutout.height} alt="" />}
 </section>
 
 <style>
   .hero {
-    position: relative;
     display: flex;
-    align-items: center;
-    height: 62.5svh;
+    align-items: flex-end;
+    justify-content: space-between;
+    max-height: 62.5svh;
     padding: 0 var(--gutter);
-    container-type: size;
-    border-bottom: var(--stroke) solid var(--line);
+    container-type: inline-size;
     overflow: hidden;
   }
 
+  .intro,
+  .cutout {
+    --space: calc(var(--rail) * 2 / 3);
+    --cutout-width: min((62.5svh - var(--header) - 2 * var(--space)) * var(--ratio, 0), 55cqw);
+  }
+
   .intro {
-    --u: calc(100cqh / 500);
-    position: relative;
-    z-index: 1;
+    --u: min(
+      (62.5svh - var(--header) - 2 * var(--space) - var(--s12)) / 249,
+      (100cqw - var(--cutout-width)) / 340
+    );
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: calc(16 * var(--u));
-    max-width: calc(560 * var(--u));
-    padding-block: calc(48 * var(--u));
+    padding: calc(var(--header) + var(--space)) 0 var(--space);
+  }
+
+  .intro > * + * {
+    margin-top: calc(16 * var(--u));
   }
 
   .intro > :global(svg) {
@@ -85,49 +86,88 @@ const cutout = profile.cutout?.url && {
   }
 
   .name {
-    font-size: calc(14 * var(--u));
+    margin-top: calc(8 * var(--u));
+    font-size: max(var(--text-xs), calc(14 * var(--u)));
     font-weight: 500;
     letter-spacing: 0.12em;
     text-transform: uppercase;
   }
 
+  .bio,
+  .actions {
+    align-self: stretch;
+    contain: inline-size;
+  }
+
   .bio {
-    font-size: calc(18 * var(--u));
+    margin-top: calc(24 * var(--u));
+    font-size: var(--text-base);
+    font-weight: 350;
     color: var(--ink-muted);
   }
 
   .actions {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     gap: var(--s6);
-    margin-top: calc(16 * var(--u));
+    margin-top: calc(32 * var(--u));
   }
 
   .cutout {
-    position: absolute;
-    right: 0;
-    bottom: 0;
-    height: 88%;
-  }
-
-  .cutout img {
-    width: 100%;
-    height: 100%;
+    flex-shrink: 0;
+    width: var(--cutout-width);
+    height: auto;
+    margin: calc(var(--header) + var(--space)) calc(-1 * var(--gutter)) var(--space) 0;
+    mask-image: linear-gradient(black 75%, transparent);
   }
 
   @media (width < 768px) {
     .hero {
-      align-items: flex-end;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: repeat(5, auto) 1fr;
+      height: 62.5svh;
+      padding-top: calc(var(--header) + var(--s4));
+      container-type: size;
+    }
+
+    .intro {
+      --u: min(100cqh / 640, 100cqw / 340);
+      display: contents;
+    }
+
+    .intro > * {
+      grid-column: 1 / -1;
+    }
+
+    .intro > :global(svg) {
+      width: calc(64 * var(--u));
+    }
+
+    .bio,
+    .actions {
+      grid-column: 1;
+      z-index: 1;
+    }
+
+    .bio {
+      grid-row: 4;
     }
 
     .actions {
-      flex-direction: column;
-      align-items: flex-start;
+      grid-row: 5;
     }
 
     .cutout {
-      height: 60%;
-      translate: 35% 0;
+      margin: 0;
+      grid-row: 4 / -1;
+      grid-column: 1 / -1;
+      width: calc(100% + var(--gutter));
+      height: 100%;
+      contain: size;
+      object-fit: contain;
+      object-position: right bottom;
     }
   }
 </style>

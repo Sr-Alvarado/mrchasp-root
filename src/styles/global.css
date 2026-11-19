@@ -10,13 +10,14 @@
   --s16: 64px;
   --s24: 96px;
   --text-xs: 12px;
-  --text-base: 16px;
+  --text-base: 17px;
   --text-xl: 20px;
   --text-2xl: 24px;
   --text-4xl: 36px;
   --text-5xl: 48px;
   --rail: 88px;
   --bar: 48px;
+  --header: calc(var(--s6) + var(--s12));
   --gutter: var(--s12);
   --fast: 150ms;
   --slow: 400ms;
@@ -55,8 +56,11 @@ header {
   position: relative;
   z-index: 1;
   text-shadow:
+    0 0 1px var(--bg),
     0 0 2px var(--bg),
-    0 0 8px var(--bg);
+    0 0 4px var(--bg),
+    0 0 8px var(--bg),
+    0 0 16px var(--bg);
 }
 
 a {
@@ -109,6 +113,7 @@ svg {
 @media (width < 768px) {
   :root {
     --gutter: var(--s4);
+    --header: calc(var(--s4) + var(--s12));
   }
 
   body {
