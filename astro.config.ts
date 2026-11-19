@@ -4,6 +4,7 @@ import {defaultLocale, locales} from './src/lib/i18n'
 
 export default defineConfig({
   site: 'https://mrchasp.com',
+  build: {inlineStylesheets: 'always'},
   integrations: [icon()],
   i18n: {locales: [...locales], defaultLocale},
   fonts: [
