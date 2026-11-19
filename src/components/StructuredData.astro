@@ -1,0 +1,27 @@
+---
+import {content} from '../lib/content'
+import type {Locale} from '../lib/i18n'
+
+type Props = {locale: Locale; description: string | undefined}
+
+const {locale, description} = Astro.props
+const {profile, channels} = content
+
+const data = {
+  '@context': 'https://schema.org',
+  '@type': 'ProfilePage',
+  url: Astro.url,
+  inLanguage: locale,
+  mainEntity: {
+    '@type': 'Person',
+    name: profile.displayName,
+    alternateName: profile.alias,
+    description,
+    image: profile.cutout?.url,
+    url: Astro.site,
+    sameAs: channels.flatMap((channel) => (channel.url?.startsWith('https://') ? [channel.url] : [])),
+  },
+}
+---
+
+<script is:inline type="application/ld+json" set:html={JSON.stringify(data)} />

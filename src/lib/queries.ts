@@ -6,10 +6,10 @@ export const homeQuery = defineQuery(`{
     "displayName": array::join(array::compact([name.first, name.last, name.secondLast]), " "),
     "bio": bio.short,
     "cutout": images[role == "cutout"][0].image.asset->{url, "width": metadata.dimensions.width, "height": metadata.dimensions.height},
-    "og": images[role == "og"][0].image.asset->url
+    "og": images[role == "og"][0].image{asset, hotspot, crop}
   },
   "palettes": *[_type == "theme"][0]{light, dark},
-  "root": *[_type == "site" && key == "root"][0]{colorLight, colorDark, ui},
+  "root": *[_type == "site" && key == "root"][0]{colorLight, colorDark, seoTitle, ui},
   "sites": *[_type == "site" && key in ["lab", "blog", "brain", "talks", "cv"]] | order(order asc){
     key, name, url, colorLight, colorDark, description
   },

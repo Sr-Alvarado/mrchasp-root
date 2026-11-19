@@ -1,22 +1,33 @@
 ---
 import {Font} from 'astro:assets'
 import {getRelativeLocaleUrl} from 'astro:i18n'
+import {createImageUrlBuilder} from '@sanity/image-url'
 import type {Palette} from '../../sanity.types'
-import {cloudinaryUrl} from '../lib/cloudinary'
 import {content} from '../lib/content'
 import {type Locale, locales} from '../lib/i18n'
+import {icons} from '../lib/icons'
+import {sanity} from '../lib/sanity'
 import {themeKey} from '../scripts/theme'
 import '../styles/global.css'
+import StructuredData from './StructuredData.astro'
 
 type Props = {
   locale: Locale
-  title: string | null
+  title: string | undefined
   description: string | undefined
-  image: string | null
+  image: typeof content.profile.og
 }
 
 const {locale, title, description, image} = Astro.props
 const {light, dark} = content.palettes
+const ogImage = {width: 1200, height: 630}
+const ogImageUrl =
+  image?.asset &&
+  createImageUrlBuilder(sanity).image(image).size(ogImage.width, ogImage.height).fit('crop').format('jpg').url()
+const ogLocale = (value: Locale) => {
+  const {language, region} = new Intl.Locale(value).maximize()
+  return `${language}_${region}`
+}
 const roles = Object.keys(light).filter((role) => role !== '_type' && role !== 'activity')
 const themeCss = `:root{${roles
   .map((role) => {
@@ -44,13 +55,40 @@ const themeCss = `:root{${roles
       ))
     }
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    {
+      icons
+        .filter((icon) => icon.use !== 'manifest')
+        .map(({name, size, use}) => (
+          <link rel={use} href={`/${name}.png`} sizes={`${size}x${size}`} type="image/png" />
+        ))
+    }
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content={light.bg} />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content={dark.bg} />
     <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={content.profile.alias} />
     <meta property="og:url" content={Astro.url} />
-    <meta property="og:locale" content={locale} />
+    <meta property="og:locale" content={ogLocale(locale)} />
+    {
+      locales
+        .filter((alternate) => alternate !== locale)
+        .map((alternate) => <meta property="og:locale:alternate" content={ogLocale(alternate)} />)
+    }
     <meta property="og:title" content={title} />
     {description && <meta property="og:description" content={description} />}
-    {image && <meta property="og:image" content={cloudinaryUrl(image, 1200)} />}
+    {
+      ogImageUrl && (
+        <>
+          <meta property="og:image" content={ogImageUrl} />
+          <meta property="og:image:width" content={String(ogImage.width)} />
+          <meta property="og:image:height" content={String(ogImage.height)} />
+          <meta property="og:image:alt" content={title} />
+          <meta name="twitter:image" content={ogImageUrl} />
+        </>
+      )
+    }
     <meta name="twitter:card" content="summary_large_image" />
+    <StructuredData locale={locale} description={description} />
     <Font cssVariable="--font-lexend" preload />
     <style is:inline set:html={themeCss}></style>
     <script is:inline define:vars={{themeKey}}>

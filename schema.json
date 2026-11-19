@@ -683,6 +683,14 @@
         },
         "optional": true
       },
+      "seoTitle": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "inline",
+          "name": "localeString"
+        },
+        "optional": true
+      },
       "ui": {
         "type": "objectAttribute",
         "value": {
