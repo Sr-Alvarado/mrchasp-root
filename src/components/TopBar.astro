@@ -12,7 +12,7 @@ const {channels, locale} = Astro.props
 const t = ui[locale]
 ---
 
-<header class="topbar">
+<header class="topbar" data-header>
   <ul class="channels" aria-label={t.channels}>
     {
       channels.map((channel) => (
@@ -33,15 +33,28 @@ const t = ui[locale]
   <ThemeToggle label={t.theme} />
 </header>
 
+<script>
+  import '../scripts/scrolledHeader'
+</script>
+
 <style>
   .topbar {
-    position: absolute;
-    top: var(--s6);
-    right: var(--gutter);
+    position: fixed;
+    top: calc(var(--s6) - var(--s2));
+    right: calc(var(--gutter) - var(--s2));
     z-index: 2;
     display: flex;
     align-items: center;
     gap: var(--s3);
+    padding: var(--s2);
+    transition:
+      background-color var(--fast) ease-out,
+      backdrop-filter var(--fast) ease-out;
+  }
+
+  .topbar[data-scrolled] {
+    background-color: color-mix(in srgb, var(--bg) 65%, transparent);
+    backdrop-filter: blur(12px);
   }
 
   .channels {
@@ -57,8 +70,8 @@ const t = ui[locale]
 
   @media (width < 768px) {
     .topbar {
-      top: var(--s4);
-      left: var(--gutter);
+      top: calc(var(--s4) - var(--s2));
+      left: calc(var(--gutter) - var(--s2));
     }
 
     .channels {
