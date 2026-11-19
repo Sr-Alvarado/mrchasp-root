@@ -1,6 +1,6 @@
 ---
 import type {HTMLAttributes} from 'astro/types'
-import {cloudinaryUrl} from '../lib/cloudinary'
+import {cloudinarySrcset, cloudinaryUrl} from '../lib/cloudinary'
 
 type Props = HTMLAttributes<'a'> & {image?: string | null | undefined}
 
@@ -17,7 +17,17 @@ const Element = href ? 'a' : 'article'
 >
   <div class="body">
     <slot name="head" />
-    {image && <img src={cloudinaryUrl(image, 800)} alt="" loading="lazy" />}
+    {
+      image && (
+        <img
+          src={cloudinaryUrl(image, 800)}
+          srcset={cloudinarySrcset(image)}
+          sizes="(width < 768px) 90vw, (width < 1024px) 45vw, 30vw"
+          alt=""
+          loading="lazy"
+        />
+      )
+    }
     <slot />
   </div>
 </Element>

@@ -1,5 +1,5 @@
 ---
-import {cloudinaryUrl} from '../lib/cloudinary'
+import {cloudinarySrcset, cloudinaryUrl} from '../lib/cloudinary'
 import type {content} from '../lib/content'
 import {type Locale, localize} from '../lib/i18n'
 import {ui} from '../lib/ui'
@@ -11,7 +11,12 @@ type Props = {profile: typeof content.profile; cvUrl: string | null | undefined;
 const {profile, cvUrl, locale} = Astro.props
 const t = ui[locale]
 const bio = localize(profile.bio, locale)
-const cutout = profile.cutout?.url && {...profile.cutout, src: cloudinaryUrl(profile.cutout.url, 1200)}
+const cutoutUrl = profile.cutout?.url
+const cutout = cutoutUrl && {
+  ...profile.cutout,
+  src: cloudinaryUrl(cutoutUrl, 1200),
+  srcset: cloudinarySrcset(cutoutUrl),
+}
 ---
 
 <section
@@ -38,7 +43,20 @@ const cutout = profile.cutout?.url && {...profile.cutout, src: cloudinaryUrl(pro
       </Button>
     </div>
   </div>
-  {cutout && <img class="cutout" src={cutout.src} width={cutout.width} height={cutout.height} alt="" />}
+  {
+    cutout && (
+      <img
+        class="cutout"
+        src={cutout.src}
+        srcset={cutout.srcset}
+        sizes="(width < 768px) 100vw, 55vw"
+        width={cutout.width}
+        height={cutout.height}
+        alt=""
+        fetchpriority="high"
+      />
+    )
+  }
 </section>
 
 <style>
