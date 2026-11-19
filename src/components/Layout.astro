@@ -93,6 +93,7 @@ const themeCss = `:root{${roles
           defer
           src="https://cloud.umami.is/script.js"
           data-website-id={content.root.umamiWebsiteId}
+          data-domains={Astro.site?.hostname}
         />
       )
     }
@@ -107,5 +108,8 @@ const themeCss = `:root{${roles
   <body>
     <slot />
     <SpeedInsights />
+    <script>
+      import '../scripts/outboundLinks'
+    </script>
   </body>
 </html>
