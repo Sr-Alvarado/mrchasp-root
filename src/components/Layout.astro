@@ -86,6 +86,16 @@ const themeCss = `:root{${roles
     <meta name="twitter:image" content={ogImageUrl} />
     <meta name="twitter:card" content="summary_large_image" />
     {xHandle && <meta name="twitter:site" content={xHandle} />}
+    {
+      content.root.umamiWebsiteId && (
+        <script
+          is:inline
+          defer
+          src="https://cloud.umami.is/script.js"
+          data-website-id={content.root.umamiWebsiteId}
+        />
+      )
+    }
     <StructuredData locale={locale} title={title} description={description} />
     <Font cssVariable="--font-lexend" preload />
     <style is:inline set:html={themeCss}></style>

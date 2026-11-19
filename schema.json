@@ -691,6 +691,13 @@
         },
         "optional": true
       },
+      "umamiWebsiteId": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        },
+        "optional": true
+      },
       "ui": {
         "type": "objectAttribute",
         "value": {

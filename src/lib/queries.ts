@@ -11,7 +11,7 @@ export const homeQuery = defineQuery(`{
     "og": images[role == "og"][0].image{asset, hotspot, crop, alt}
   },
   "palettes": *[_type == "theme"][0]{light, dark},
-  "root": *[_type == "site" && key == "root"][0]{colorLight, colorDark, seoTitle, ui},
+  "root": *[_type == "site" && key == "root"][0]{colorLight, colorDark, seoTitle, umamiWebsiteId, ui},
   "sites": *[_type == "site" && key in ["lab", "blog", "brain", "talks", "cv"]] | order(order asc){
     key, name, url, colorLight, colorDark, description
   },
