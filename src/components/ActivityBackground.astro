@@ -43,12 +43,12 @@ const {days, palettes} = Astro.props
     light: ['#0095a8', '#fa8900', '#00b368', '#ff5792', '#5842ff'],
     dark: ['#16a3b6', '#e4b781', '#49e9a6', '#df769b', '#7060eb'],
   }
-  const cellSize = 10
-  const step = cellSize + 4
-  const litShare = 0.20
+  const cellSize = 7
+  const step = 15
+  const litShare = 0.5
   const hueShare = 9 / 10
   const hueAlpha = 0.5
-  const intensity = 0.25
+  const intensity = 0.35
   const levels = [0.4, 0.6, 0.8, 1]
   const fadeMs = 600
   const glowMs = 1000
@@ -84,7 +84,15 @@ const {days, palettes} = Astro.props
   const paint = (index: number, color: string, alpha: number) => {
     context.fillStyle = color
     context.globalAlpha = alpha
-    context.fillRect((index % columns) * step, Math.floor(index / columns) * step, cellSize, cellSize)
+    context.beginPath()
+    context.arc(
+      (index % columns) * step + step / 2,
+      Math.floor(index / columns) * step + step / 2,
+      cellSize / 2,
+      0,
+      Math.PI * 2,
+    )
+    context.fill()
   }
 
   const reroll = (index: number, now: number) => {
