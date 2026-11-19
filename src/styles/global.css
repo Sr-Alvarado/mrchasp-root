@@ -94,6 +94,11 @@ svg {
   flex-shrink: 0;
 }
 
+[data-dragging] {
+  cursor: grabbing;
+  user-select: none;
+}
+
 :focus-visible {
   outline: var(--stroke) solid var(--focus);
   outline-offset: 2px;

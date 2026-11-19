@@ -15,7 +15,7 @@ const {id, label, items} = Astro.props
 
 {
   items.length > 0 && (
-    <section id={id} class="ticker" aria-label={label}>
+    <section id={id} class="ticker" aria-label={label} data-ticker>
       <div class="track">
         {[false, true].map((copy) => (
           <ul inert={copy} aria-hidden={copy ? 'true' : undefined}>
@@ -34,23 +34,23 @@ const {id, label, items} = Astro.props
   )
 }
 
+<script>
+  import '../scripts/ticker'
+</script>
+
 <style>
   .ticker {
     margin-left: calc(-1 * var(--rail));
     border-block: var(--s1) solid var(--ink);
     background-color: color-mix(in srgb, var(--bg) 25%, transparent);
     backdrop-filter: blur(2px);
-    overflow: hidden;
+    overflow-x: auto;
+    scrollbar-width: none;
   }
 
   .track {
     display: flex;
     width: max-content;
-    animation: ticker 40s linear infinite;
-  }
-
-  .ticker:hover .track {
-    animation-play-state: paused;
   }
 
   ul {
@@ -92,22 +92,6 @@ const {id, label, items} = Astro.props
     font-weight: 700;
     letter-spacing: 0.12em;
     text-transform: uppercase;
-  }
-
-  @keyframes ticker {
-    to {
-      transform: translateX(-50%);
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .ticker {
-      overflow-x: auto;
-    }
-
-    .track {
-      animation: none;
-    }
   }
 
   @media (width < 768px) {
