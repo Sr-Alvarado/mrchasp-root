@@ -41,7 +41,7 @@ const tickerFeed = Object.values(Object.groupBy(feed, (item) => item.source ?? '
     const site = sites.find((candidate) => candidate.key === item.source)
     const channel = channels.find((candidate) => candidate.platform?.toLowerCase() === item.source)
     return {
-      source: site?.name ?? channel?.platform ?? item.source,
+      source: localize(site?.name, locale) ?? channel?.platform ?? item.source,
       sourceUrl: site?.url ?? channel?.url,
       color: site && onBackground(site),
       title: item.title ?? item.text,
@@ -67,7 +67,7 @@ const navItems: NavItem[] = [
     .filter((site) => site.key === 'cv' || siteSections.some((section) => section.site === site))
     .map((site) => ({
       id: site.key,
-      label: site.name ?? site.key,
+      label: localize(site.name, locale) ?? site.key,
       href: site.key === 'cv' ? (site.url ?? '') : `#${site.key}`,
       variant: 'site' as const,
       color: onInk(site),
@@ -95,7 +95,7 @@ const navItems: NavItem[] = [
       siteSections.map(({site, projects, items}) => (
         <Section
           id={site.key}
-          title={site.name}
+          title={localize(site.name, locale)}
           description={localize(site.description, locale)}
           url={site.url}
         >

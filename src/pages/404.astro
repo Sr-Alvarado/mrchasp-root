@@ -1,0 +1,61 @@
+---
+import ActivityBackground from '../components/ActivityBackground.astro'
+import BottomBar from '../components/BottomBar.astro'
+import Button from '../components/Button.astro'
+import Layout from '../components/Layout.astro'
+import Logo from '../components/Logo.astro'
+import Rail from '../components/Rail.astro'
+import TopBar from '../components/TopBar.astro'
+import {content} from '../lib/content'
+import {defaultLocale} from '../lib/i18n'
+import type {NavItem} from '../lib/navigation'
+import {ui} from '../lib/ui'
+
+const t = ui[defaultLocale]
+const {palettes, channels, feed} = content
+const navItems: NavItem[] = [{id: 'inicio', label: t.home, href: '/', variant: 'home'}]
+---
+
+<Layout locale={defaultLocale} title={t.notFoundTitle} description={t.notFoundText}>
+  <Rail items={navItems} label={t.sections} />
+  <BottomBar items={navItems} label={t.sections} />
+  <TopBar channels={channels.filter((channel) => channel.showInHero)} locale={defaultLocale} />
+  <main>
+    <section id="inicio" class="not-found" aria-labelledby="inicio-title">
+      <Logo size={96} />
+      <h1 id="inicio-title">{t.notFoundTitle}</h1>
+      <p>{t.notFoundText}</p>
+      <Button variant="primary" href="/">{t.backHome}</Button>
+    </section>
+  </main>
+  <ActivityBackground days={feed.map((item) => item.publishedAt)} palettes={palettes} />
+</Layout>
+
+<style>
+  .not-found {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: var(--s6);
+    min-height: 100svh;
+    padding: var(--header) var(--gutter) var(--s12);
+  }
+
+  .not-found > :global(svg) {
+    color: var(--accent-text);
+  }
+
+  h1 {
+    font-size: var(--text-5xl);
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
+
+  p {
+    max-width: 40ch;
+    font-size: var(--text-base);
+    color: var(--ink-muted);
+  }
+</style>

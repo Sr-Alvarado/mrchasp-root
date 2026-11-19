@@ -643,7 +643,8 @@
       "name": {
         "type": "objectAttribute",
         "value": {
-          "type": "string"
+          "type": "inline",
+          "name": "localeString"
         },
         "optional": true
       },
@@ -776,6 +777,30 @@
               "optional": true
             },
             "theme": {
+              "type": "objectAttribute",
+              "value": {
+                "type": "inline",
+                "name": "localeString"
+              },
+              "optional": true
+            },
+            "notFoundTitle": {
+              "type": "objectAttribute",
+              "value": {
+                "type": "inline",
+                "name": "localeString"
+              },
+              "optional": true
+            },
+            "notFoundText": {
+              "type": "objectAttribute",
+              "value": {
+                "type": "inline",
+                "name": "localeString"
+              },
+              "optional": true
+            },
+            "backHome": {
               "type": "objectAttribute",
               "value": {
                 "type": "inline",
