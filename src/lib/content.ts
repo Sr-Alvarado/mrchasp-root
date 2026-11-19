@@ -4,8 +4,8 @@ import {sanity} from './sanity'
 
 const {profile, palettes, root, sites, feed, ...rest} = await sanity.fetch(homeQuery)
 
-if (!profile || !palettes?.light || !palettes.dark || !root?.ui) {
-  throw new Error('Sanity is missing the profile, theme or root site UI')
+if (!profile?.og?.asset || !palettes?.light || !palettes.dark || !root?.ui) {
+  throw new Error('Sanity is missing the profile, OG image, theme or root site UI')
 }
 
 const enrichedFeed = await Promise.all(
@@ -26,7 +26,7 @@ const enrichedFeed = await Promise.all(
 
 export const content = {
   ...rest,
-  profile,
+  profile: {...profile, og: profile.og},
   palettes: {light: palettes.light, dark: palettes.dark},
   root: {...root, ui: root.ui},
   sites: sites.flatMap(({key, ...site}) => (key ? [{...site, key}] : [])),
