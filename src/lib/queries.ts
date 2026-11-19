@@ -9,7 +9,7 @@ export const homeQuery = defineQuery(`{
     "og": images[role == "og"][0].image.asset->url
   },
   "palettes": *[_type == "theme"][0]{light, dark},
-  "root": *[_type == "site" && key == "root"][0]{colorLight, colorDark},
+  "root": *[_type == "site" && key == "root"][0]{colorLight, colorDark, ui},
   "sites": *[_type == "site" && key in ["lab", "blog", "brain", "talks", "cv"]] | order(order asc){
     key, name, url, colorLight, colorDark, description
   },
