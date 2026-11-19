@@ -8,14 +8,14 @@ type Item = {
   day: string
 }
 
-type Props = {id: string; label: string; items: Item[]}
+type Props = {label: string; items: Item[]}
 
-const {id, label, items} = Astro.props
+const {label, items} = Astro.props
 ---
 
 {
   items.length > 0 && (
-    <section id={id} class="ticker" aria-label={label} data-ticker>
+    <section class="ticker" aria-label={label} data-ticker>
       <div class="track">
         {[false, true].map((copy) => (
           <ul inert={copy} aria-hidden={copy ? 'true' : undefined}>

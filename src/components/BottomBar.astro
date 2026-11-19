@@ -11,7 +11,7 @@ const {items, label} = Astro.props
   <ul>
     {
       items.map((item) => (
-        <li>
+        <li style={`--chars: ${item.label.length}`}>
           <a href={item.href} data-nav={item.id}>
             <NavMarker item={item} />
             <span class="label">{item.label}</span>
@@ -38,12 +38,8 @@ const {items, label} = Astro.props
 
   li {
     flex: 0 0 var(--s8);
-    min-width: 0;
-    transition: flex-grow var(--slow) ease-out;
-  }
-
-  li:has([aria-current]) {
-    flex-grow: 1;
+    min-width: var(--s8);
+    container-type: size;
   }
 
   a {
@@ -55,6 +51,7 @@ const {items, label} = Astro.props
     font-size: var(--text-xs);
     font-weight: 500;
     white-space: nowrap;
+    transition: font-size var(--fast) ease-out;
   }
 
   .label {
@@ -62,8 +59,27 @@ const {items, label} = Astro.props
     overflow: hidden;
   }
 
-  [aria-current] .label {
-    max-width: 100%;
+  @container (width > 120px) {
+    a {
+      justify-content: flex-start;
+      gap: var(--s3);
+      padding-left: var(--s4);
+      font-size: clamp(
+        var(--text-xs),
+        (100cqw - 2 * var(--s4) - var(--s3)) / (var(--chars) * 0.62 + 1),
+        var(--text-xl)
+      );
+      font-weight: 700;
+    }
+
+    .label {
+      max-width: 100%;
+    }
+
+    a > :global(*:first-child) {
+      width: 1em;
+      height: 1em;
+    }
   }
 
   @media (width < 768px) {

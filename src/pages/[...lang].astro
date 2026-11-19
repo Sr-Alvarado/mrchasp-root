@@ -60,18 +60,13 @@ const siteSections = sectionSites
 
 const navItems: NavItem[] = [
   {id: 'inicio', label: t.home, href: '#inicio', variant: 'home'},
-  ...(tickerFeed.length > 0
-    ? [{id: 'ando', label: t.now, href: '#ando', variant: 'now' as const, color: onInk(root)}]
-    : []),
-  ...sites
-    .filter((site) => site.key === 'cv' || siteSections.some((section) => section.site === site))
-    .map((site) => ({
-      id: site.key,
-      label: localize(site.name, locale) ?? site.key,
-      href: site.key === 'cv' ? (site.url ?? '') : `#${site.key}`,
-      variant: 'site' as const,
-      color: onInk(site),
-    })),
+  ...siteSections.map(({site}) => ({
+    id: site.key,
+    label: localize(site.name, locale) ?? site.key,
+    href: `#${site.key}`,
+    variant: 'site' as const,
+    color: onInk(site),
+  })),
   {id: 'contacto', label: t.contact, href: '#contacto', variant: 'contact'},
 ]
 ---
@@ -86,11 +81,7 @@ const navItems: NavItem[] = [
   <TopBar channels={channels.filter((channel) => channel.showInHero)} locale={locale} />
   <main>
     <Hero profile={profile} cvUrl={cvUrl} locale={locale} />
-    <Ticker
-      id="ando"
-      label={t.nowTitle}
-      items={tickerFeed}
-    />
+    <Ticker label={t.nowTitle} items={tickerFeed} />
     {
       siteSections.map(({site, projects, items}) => (
         <Section
